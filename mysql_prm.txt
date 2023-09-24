@@ -1,0 +1,195 @@
+CREATE TABLE prm_d.cities(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),    
+    country VARCHAR(100)
+);
+
+CREATE TABLE prm_d.places (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    nation VARCHAR(50)
+);
+
+
+CREATE TABLE prm_d.people (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    primary_name VARCHAR(50) NOT NULL,
+    family_name VARCHAR(50),
+    given_name VARCHAR(50),
+    middle_name VARCHAR(50),
+    nationality VARCHAR(50),
+    ethnicity VARCHAR(50),
+    gender VARCHAR(50),
+    birth DATE,
+    birth_place VARCHAR(100),
+    death DATE,    
+    death_place VARCHAR(100),
+    FOREIGN KEY (birth_place) REFERENCES prm_d.places(id),
+    FOREIGN KEY (death_place) REFERENCES prm_d.places(id)
+);
+
+CREATE TABLE prm_d.orgainzation(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(100),
+    time_start YEAR,
+    time_end YEAR,
+    
+);
+
+CREATE TABLE prm_d.people_organization(
+    organization_id INT NOT NULL,
+    person_id INT NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES prm_d.organization(id),
+    FOREIGN KEY (person_id) REFERENCES prm_d.people(id),
+    PRIMARY KEY (oranization_id, person_id)
+);
+
+CREATE TABLE prm_d.organization_place(
+    organization_id INT NOT NULL,
+    place_id INT NOT NULL, 
+    time_start YEAR, 
+    time_end YEAR,
+    FOREIGN KEY (organization_id) REFERENCES prm_d.organization(id),
+    FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
+);
+
+
+CREATE TABLE prm_d.artwork(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50),
+    name VARCHAR(150) NOT NULL,
+    language VARCHAR(150),
+    production_by VARCHAR(150),
+    production_time_start DATE,
+    production_time_end DATE,
+    width FLOAT,
+    height FLOAT,
+    place_id INT,
+    FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
+);
+
+CREATE TABLE prm_d.artwork_lang(
+    artwork_id INT, 
+    lang VARCHAR(20),
+    name_lang VARCHAR(150),
+    FOREIGN KEY (artwork_id) REFERENCES prm_d.artwork(id),
+    PRIMARY KEY (artwork_id, lang)
+);
+
+CREATE TABLE prm_d.magazine(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150),
+    production_by_id INT,
+    production_in_id INT,
+    production_time_start DATE,
+    production_time_end DARE,
+    lang VARCHAR(20),
+    FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+);
+
+CREATE TABLE prm_d.volume(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    magazine_id INT,
+    production_by_id INT,
+    production_in_id INT,
+    FOREIGN KEY (magazine_id) REFERENCES prm_d.magazine(id),
+    FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+);
+
+CREATE TABLE prm_d.issue(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    volume_id INT,
+    number INT,
+    size INT,
+    FOREIGN KEY (volume_id) REFERENCES prm_d.volume(id)
+);
+    
+
+CREATE TABLE prm_d.page(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_id INT,
+    number_repro INT, 
+    text VARCHAR(10),
+    full_bleed VARCHAR(10),
+    FOREIGN KEY (issue_id) REFERENCES prm_d.issue(id)
+);
+
+
+CREATE TABLE prm_d.reproduction(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    artwork_id INT, 
+    page_id INT,
+    colour VARCHAR(50),
+    placement VARCHAR(50),
+    width FLOAT, 
+    height FLOAT,
+    dimension FLOAT,
+    FOREIGN KEY (artwork_id) REFERENCES prm_d.artwork(id),
+    FOREIGN KEY (page_id) REFERENCES prm_d.page(id)
+);
+
+CREATE TABLE prm_d.repro_issue( //nebo nejspis volume???
+    repro_id INT, 
+    issue_id INT,
+    FOREIGN KEY (repro_id) REFERENCES prm_d.reproduction(id),
+    FOREIGN KEY (issue_id) REFERENCES prm_d.issue(id),
+    PRIMARY KEY (repro_id, issue_id)
+);
+
+
+CREATE TABLE prm_d.press_bloc(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    production_by_id INT,
+    production_in_id INT,
+    technique VARCHAR(100),
+    negativity VARCHAR(50),
+    FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+);
+
+CREATE TABLE prm_d.caption(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    lang VARCHAR(20),
+    artwork_title VARCHAR(10),
+    artwork_author VARCHAR(10),
+    artwork_year VARCHAR(10),
+    artwork_technique VARCHAR(10),
+    artwork_size VARCHAR(10),
+    repro_full VARCHAR(10),
+    repro_title VARCHAR(10),
+    repro_company VARCHAR(10),
+    repro_technique VARCHAR(10),
+    page_id INT, 
+    FOREIGN KEY (page_id) REFERENCES prm_d.page(id)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

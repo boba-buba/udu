@@ -29,14 +29,14 @@ CREATE TABLE prm_d.people (
     ethnicity VARCHAR(50),
     gender VARCHAR(50),
     birth DATE,
-    birth_place VARCHAR(100),
+    birth_place INT,
     death DATE,    
-    death_place VARCHAR(100),
+    death_place INT,
     FOREIGN KEY (birth_place) REFERENCES prm_d.places(id),
     FOREIGN KEY (death_place) REFERENCES prm_d.places(id)
 );
 
-CREATE TABLE prm_d.orgainzation(
+CREATE TABLE prm_d.orgainzations(
     id INT AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(100),
     time_start YEAR,
@@ -47,7 +47,7 @@ CREATE TABLE prm_d.orgainzation(
 CREATE TABLE prm_d.people_organization(
     organization_id INT NOT NULL,
     person_id INT NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES prm_d.organization(id),
+    FOREIGN KEY (organization_id) REFERENCES prm_d.organizations(id),
     FOREIGN KEY (person_id) REFERENCES prm_d.people(id),
     PRIMARY KEY (oranization_id, person_id)
 );
@@ -57,7 +57,7 @@ CREATE TABLE prm_d.organization_place(
     place_id INT NOT NULL, 
     time_start YEAR, 
     time_end YEAR,
-    FOREIGN KEY (organization_id) REFERENCES prm_d.organization(id),
+    FOREIGN KEY (organization_id) REFERENCES prm_d.organizations(id),
     FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
 );
 
@@ -67,6 +67,7 @@ CREATE TABLE prm_d.artwork(
     type VARCHAR(50),
     name VARCHAR(150) NOT NULL,
     language VARCHAR(150),
+    //name_lang JSON,
     production_by VARCHAR(150),
     production_time_start DATE,
     production_time_end DATE,
@@ -76,7 +77,7 @@ CREATE TABLE prm_d.artwork(
     FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
 );
 
-CREATE TABLE prm_d.artwork_lang(
+CREATE TABLE prm_d.artwork_lang( //mozna jen v predchozi tabulce bude polozak name_lang JSON kde bude "lang" : "name in lang"
     artwork_id INT, 
     lang VARCHAR(20),
     name_lang VARCHAR(150),
@@ -90,10 +91,10 @@ CREATE TABLE prm_d.magazine(
     production_by_id INT,
     production_in_id INT,
     production_time_start DATE,
-    production_time_end DARE,
+    production_time_end DATE,
     lang VARCHAR(20),
     FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
-    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organizations(id)
 );
 
 CREATE TABLE prm_d.volume(
@@ -103,7 +104,7 @@ CREATE TABLE prm_d.volume(
     production_in_id INT,
     FOREIGN KEY (magazine_id) REFERENCES prm_d.magazine(id),
     FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
-    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organizations(id)
 );
 
 CREATE TABLE prm_d.issue(

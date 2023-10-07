@@ -1,12 +1,23 @@
+
+CREATE TABLE prm_d.places(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    info JSON
+);
+
 CREATE TABLE prm_d.counrties(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100),
+    latitude FLOAT,
+    longitude FLOAT
 );
 
 CREATE TABLE prm_d.cities(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),    
-    country_id INT, 
+    name VARCHAR(100),
+    country_id INT,
+    latitude FLOAT,
+    longitude FLOAT,
     FOREIGN KEY (country_id) REFERENCES prm_d.countries(id)
 );
 
@@ -30,18 +41,25 @@ CREATE TABLE prm_d.people (
     gender VARCHAR(50),
     birth DATE,
     birth_place INT,
-    death DATE,    
+    death DATE,
     death_place INT,
     FOREIGN KEY (birth_place) REFERENCES prm_d.places(id),
     FOREIGN KEY (death_place) REFERENCES prm_d.places(id)
 );
 
-CREATE TABLE prm_d.orgainzations(
+CREATE TABLE prm_d.action(
+    person_id INT,
+    start_time DATE,
+    finish_time DATE,
+    place_id INT,
+    FOREIGN KEY 
+
+);
+CREATE TABLE prm_d.organizations(
     id INT AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(100),
-    time_start YEAR,
-    time_end YEAR,
-    
+    time_start DATE,
+    time_end DATE
 );
 
 CREATE TABLE prm_d.people_organization(
@@ -67,7 +85,7 @@ CREATE TABLE prm_d.artwork(
     type VARCHAR(50),
     name VARCHAR(150) NOT NULL,
     language VARCHAR(150),
-    //name_lang JSON,
+    name_lang JSON,
     production_by VARCHAR(150),
     production_time_start DATE,
     production_time_end DATE,
@@ -77,15 +95,15 @@ CREATE TABLE prm_d.artwork(
     FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
 );
 
-CREATE TABLE prm_d.artwork_lang( //mozna jen v predchozi tabulce bude polozak name_lang JSON kde bude "lang" : "name in lang"
-    artwork_id INT, 
-    lang VARCHAR(20),
-    name_lang VARCHAR(150),
-    FOREIGN KEY (artwork_id) REFERENCES prm_d.artwork(id),
-    PRIMARY KEY (artwork_id, lang)
-);
+#CREATE TABLE prm_d.artwork_lang( //mozna jen v predchozi tabulce bude polozak name_lang JSON kde bude "lang" : "name in lang"
+#    artwork_id INT, 
+#    lang VARCHAR(20),
+#    name_lang VARCHAR(150),
+#    FOREIGN KEY (artwork_id) REFERENCES prm_d.artwork(id),
+#    PRIMARY KEY (artwork_id, lang)
+#);
 
-CREATE TABLE prm_d.magazine(
+CREATE TABLE prm_d.magazines(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150),
     production_by_id INT,
@@ -97,53 +115,57 @@ CREATE TABLE prm_d.magazine(
     FOREIGN KEY (production_by_id) REFERENCES prm_d.organizations(id)
 );
 
-CREATE TABLE prm_d.volume(
+CREATE TABLE prm_d.volumes(
     id INT AUTO_INCREMENT PRIMARY KEY,
+    number INT;
     magazine_id INT,
     production_by_id INT,
     production_in_id INT,
-    FOREIGN KEY (magazine_id) REFERENCES prm_d.magazine(id),
+    FOREIGN KEY (magazine_id) REFERENCES prm_d.magazines(id),
     FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
     FOREIGN KEY (production_by_id) REFERENCES prm_d.organizations(id)
 );
 
-CREATE TABLE prm_d.issue(
+CREATE TABLE prm_d.issues(
     id INT AUTO_INCREMENT PRIMARY KEY,
     volume_id INT,
     number INT,
     size INT,
-    FOREIGN KEY (volume_id) REFERENCES prm_d.volume(id)
+    FOREIGN KEY (volume_id) REFERENCES prm_d.volumes(id)
 );
     
 
-CREATE TABLE prm_d.page(
+CREATE TABLE prm_d.pages(
     id INT AUTO_INCREMENT PRIMARY KEY,
     issue_id INT,
     number_repro INT, 
     text VARCHAR(10),
     full_bleed VARCHAR(10),
-    FOREIGN KEY (issue_id) REFERENCES prm_d.issue(id)
+    FOREIGN KEY (issue_id) REFERENCES prm_d.issues(id)
 );
 
 
-CREATE TABLE prm_d.reproduction(
+CREATE TABLE prm_d.reproductions(
     id INT AUTO_INCREMENT PRIMARY KEY,
     artwork_id INT, 
     page_id INT,
     colour VARCHAR(50),
-    placement VARCHAR(50),
-    width FLOAT, 
+    x1 INT,
+    y1 INT,
+    x2 INT,
+    y2 INT,
+    width FLOAT,
     height FLOAT,
     dimension FLOAT,
     FOREIGN KEY (artwork_id) REFERENCES prm_d.artwork(id),
-    FOREIGN KEY (page_id) REFERENCES prm_d.page(id)
+    FOREIGN KEY (page_id) REFERENCES prm_d.pages(id)
 );
 
 CREATE TABLE prm_d.repro_issue( //nebo nejspis volume???
     repro_id INT, 
     issue_id INT,
-    FOREIGN KEY (repro_id) REFERENCES prm_d.reproduction(id),
-    FOREIGN KEY (issue_id) REFERENCES prm_d.issue(id),
+    FOREIGN KEY (repro_id) REFERENCES prm_d.reproductions(id),
+    FOREIGN KEY (issue_id) REFERENCES prm_d.issues(id),
     PRIMARY KEY (repro_id, issue_id)
 );
 
@@ -155,7 +177,7 @@ CREATE TABLE prm_d.press_bloc(
     technique VARCHAR(100),
     negativity VARCHAR(50),
     FOREIGN KEY (production_in_id) REFERENCES prm_d.places(id),
-    FOREIGN KEY (production_by_id) REFERENCES prm_d.organization(id)
+    FOREIGN KEY (production_by_id) REFERENCES prm_d.organizations(id)
 );
 
 CREATE TABLE prm_d.caption(
@@ -171,7 +193,7 @@ CREATE TABLE prm_d.caption(
     repro_company VARCHAR(10),
     repro_technique VARCHAR(10),
     page_id INT, 
-    FOREIGN KEY (page_id) REFERENCES prm_d.page(id)
+    FOREIGN KEY (page_id) REFERENCES prm_d.pages(id)
 );
 
 

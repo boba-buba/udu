@@ -215,7 +215,6 @@ CREATE TABLE prm_d.captions( #sam text je potreba ci ne
 
 
 
-   
 
 
 

@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from mysql.connector import Error
+from mysql.connector import errorcode
 
 import csv, os
 
@@ -25,10 +25,10 @@ def db_check(line, db_name, table_name):
     #statement = f"INSERT INTO {db_name}.{table_name} () VALUES "
 
 try:
-    connection = mysql.connect(host='root@photorepromtartix.udu.cas.cz',
+    connection = mysql.connect(host='147.231.55.155',
                             database='prm_d',
-                            user='root',
-                            password='5pigswererelaxingonthebeach')
+                            user='korop',
+                            password='5pigsonthe_rooF')
     if connection.is_connected():
         db_Info = connection.get_server_info()
         print("Connected to MySQL Server version ", db_Info)
@@ -37,7 +37,7 @@ try:
         record = cursor.fetchone()
         print("You're connected to database: ", record)
 
-except Error as e:
+except mysql.Error as e:
     print("Error while connecting to MySQL", e)
 finally:
     if connection.is_connected():
@@ -46,7 +46,7 @@ finally:
         print("MySQL connection is closed")
 
 
-def main():
+#def main():
     '''tableList = []
     cn = mysql.connect(user = 'root', password = '5pigswererelaxingonthebeach', host = 'web10', database = 'prm_d')
     cursor = cn.cursor()

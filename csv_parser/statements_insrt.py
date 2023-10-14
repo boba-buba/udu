@@ -1,9 +1,9 @@
 import csv
 from enum import Enum
-from db_querying import execute_query
-db = 'prm_d'
+from db_conn import db_connection
 
 
+db = db_connection()
 
 def is_float(value):
   if value is None:
@@ -35,33 +35,31 @@ def insert_into_table(dict_values, table_name):
     return statement+values
 
 
-magazine_id  = -1
-page_id =  -1
-issue_id = -1
-volume_id = -1
-
 def set_global(column, info):
     match column:
         case "magazine":
-            query = f'select id from magazines where name="{info}";'
-            #print(query)
-            magaizine = execute_query(query)
-            if (len(magaizine) > 0):
-                #print(magaizine[0][0])
-                return magaizine[0][0]
+            db.execute_query(f'select id from magazines where name="{info[0]}";')
+            magazine = db.temp_result
+            if (len(magazine) > 0):
+                return magazine[0][0]
         case "volume":
-            volume = execute_query(f"select id from volumes where num={info} and magazine_id={magazine_id}")
+            db.execute_query(f"select id from volumes where num={info[0]} and magazine_id={info[1]};")
+            volume = db.temp_result
             if (len(volume) > 0):
-                volume_id = volume[0]
+                print(volume)
+                return volume[0][0]
         case "issue":
-            issue = execute_query(f"select i.id from issues i inner join volumes v on i.volume_id=v.id inner join magazines m on v.magazine_id=m.id where i.num={info} and v.id={volume_id} and m.id={magazine_id};")
+            db.execute_query(f"select i.id from issues i inner join volumes v on i.volume_id=v.id inner join magazines m on v.magazine_id=m.id where i.num={info[0]} and v.id={info[1]} and m.id={info[2]};")
+            issue = db.temp_result
             if (len(issue) > 0):
-                issue_id = issue[0]
+                return issue[0][0]
+        case "page":
+            db.execute_query("SELECT id FROM pages WHERE id=(SELECT MAX(id) FROM pages);")
+            page = db.temp_result
+            if (len(page) > 0):
+                return page[0][0]
         case _:
-            return
-
-
-
+            return None
 
 
 def insert_statement(row):
@@ -70,7 +68,8 @@ def insert_statement(row):
         #insert magazine
         statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
         f.write(statement_magazine+'\n')
-        magazine_id = set_global("magazine", row['journal name'])
+        db.insert_db(statement_magazine)
+        magazine_id = set_global("magazine", [row['journal name']])
 
         #insert volume
         result = row['year'].split(" ") #check for 2 elements
@@ -78,35 +77,44 @@ def insert_statement(row):
             {'num' : row['volume'], 'magazine_id' : magazine_id, 'timespan_start' : result[0], 'timespan_end' : result[1]}, 'volumes' # now magazine_id must set manually
         )
         f.write(statement_volume+'\n')
-        set_global("volume", row['volume'])
+        db.insert_db(statement_volume)
+        volume_id = set_global("volume", [row['volume'], magazine_id])
+
 
         #insert issue
         statement_issue = insert_into_table(
-            {'num' : row['issue'], 'volume_id': volume_id}, 'issues' # now volume_id must set manually
+            {'num' : row['issue'], 'volume_id': volume_id}, 'issues'
         )
         f.write(statement_issue+'\n')
-        set_global("issue", row['issue'])
+        db.insert_db(statement_issue)
+        issue_id =set_global('issue', [row['issue'], volume_id, magazine_id])
+
+    return [magazine_id, volume_id, issue_id]
 
 
-def insert_multi(row):
+def insert_multi(row, page_images, globals):
 
     with open('try.sql', 'a', encoding='utf-8') as f:
         # page insert
-        p_text = 0
-        if (len(row['caption']) > 0): p_text = 1
-        statement_page = insert_into_table(
-            {'num' : row['page number'], 'p_index' : row['page index'],
-             'num_repro' : row['image number'], 'issue_id' : issue_id, 'p_text' : p_text}, # issue_id manually, jeste to num_repro
-             'pages'
-        )
-        f.write(statement_page+'\n')
+        #page_id = -1
+        p_text = 0 # zda u tech captions vsechno bude v poradku
+        if (page_images[row['page index']] == row['image number']):
+            if (len(row['caption']) > 0): p_text = 1
+            statement_page = insert_into_table(
+                {'num' : row['page number'], 'p_index' : row['page index'],
+                'num_repro' : page_images[row['page index']], 'issue_id' : globals[2], 'p_text' : p_text}, 'pages'
+            )
+            f.write(statement_page+'\n')
+            #tady se zeptat na page id
+            db.insert_db(statement_page)
+        page_id = set_global('page', [])
 
         # repro insert
         width = abs(int(row['x1']) - int(row['x2']))
         height = abs(int(row['y1']) - int(row['y2']))
 
         statement_repro = insert_into_table(
-            {'page_id': row['page index'], 'x1' : row['x1'], 'y1' : row['y1'], 'x2' : row['x2'], # for now page_index not page_id
+            {'page_id': page_id, 'x1' : row['x1'], 'y1' : row['y1'], 'x2' : row['x2'], # for now page_index not page_id
              'y2' : row['y2'], 'width' : width, 'height' : height, 'dimension' : 'Pixels',
              'area' : row['area in percentage'], 'origin_image' : row['image'] }, 'reproductions'
         )
@@ -115,7 +123,7 @@ def insert_multi(row):
         # caption insert
         if (p_text == 1):
             statement_caption = insert_into_table(
-                {'page_id' : row['page index'] }, 'captions' # page_index not page_id
+                {'page_id' : page_id, 'text' : row['caption'] }, 'captions' # page_index not page_id
             )
             f.write(statement_caption+'\n')
 

@@ -1,5 +1,4 @@
 import csv
-from enum import Enum
 from db_conn import db_connection
 
 

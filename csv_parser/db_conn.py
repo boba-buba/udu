@@ -10,6 +10,7 @@ import csv, os
 class db_connection:
 
     temp_result = []
+    temp_description = []
     def set_up_logger(self):
         # Set up logger
         logger = logging.getLogger(__name__)
@@ -75,10 +76,10 @@ class db_connection:
 
         try:
             cnx = self.connect_to_mysql(config, attempts=3)
-
             cursor = cnx.cursor()
             cursor.execute(query)
             self.temp_result = cursor.fetchall()
+            self.temp_description = cursor.description
             cnx.commit()
             cursor.close()
 

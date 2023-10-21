@@ -7,18 +7,23 @@ from statements_insrt import insert_statement, insert_multi
 
 def parse_pages(file_name):
     pages = {}
-    with open(file_name, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter=';')
-        for row in reader:
-            pages[row['page index']] = row['image number']
-    return pages
-
+    try:
+        with open(file_name, 'r', encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter=';')
+            for row in reader:
+                pages[row['page index']] = row['image number']
+        return pages
+    except:
+        print("File error")
+        return pages
 
 
 
 def parse_csv(file_name):
 
     page_images = parse_pages(file_name)
+    if (len(page_images) == 0):
+        return
 
     with open(file_name, 'r', encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter=';')

@@ -22,10 +22,10 @@ def dump_query(query, csv_file):
             result.append(row)
 
         # Write result to file.
-        with open(csv_file, 'w', newline='') as csvfile:
+        with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for row in result:
                 csvwriter.writerow(row)
 
 
-dump_query("select * from pages;", f".\\dump.csv")
+#dump_query("select * from pages;", f".\\dump.csv")

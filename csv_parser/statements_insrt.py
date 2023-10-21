@@ -63,69 +63,75 @@ def set_global(column, info):
 
 def insert_statement(row):
 
-    with open('try.sql', 'a', encoding='utf-8') as f:
-        #insert magazine
-        statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
-        f.write(statement_magazine+'\n')
-        db.insert_db(statement_magazine)
-        magazine_id = set_global("magazine", [row['journal name']])
+    ##with open('try.sql', 'a', encoding='utf-8') as f:
+    #insert magazine
+    statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
+    ##f.write(statement_magazine+'\n')
+    db.insert_db(statement_magazine)
+    magazine_id = set_global("magazine", [row['journal name']])
 
-        #insert volume
-        result = row['year'].split(" ") #check for 2 elements
-        statement_volume = insert_into_table(
-            {'num' : row['volume'], 'magazine_id' : magazine_id, 'timespan_start' : result[0], 'timespan_end' : result[1]}, 'volumes' # now magazine_id must set manually
-        )
-        f.write(statement_volume+'\n')
-        db.insert_db(statement_volume)
-        volume_id = set_global("volume", [row['volume'], magazine_id])
+    #insert volume
+    result = row['year'].split(" ") #check for 2 elements
+    time_start = result[0].split("-") #yyyy mm dd
+    time_end = result[1].split("-")
+    print(time_start)
+    statement_volume = insert_into_table(
+        {'num' : row['volume'], 'magazine_id' : magazine_id, 'year_start' : time_start[0], 'month_start' : time_start[1],
+            'day_start' : time_start[2], 'year_end' : time_end[0], 'month_end' : time_end[1], 'day_end' :time_end[2] }, 'volumes'
+    )
+    ##f.write(statement_volume+'\n')
+    db.insert_db(statement_volume)
+    volume_id = set_global("volume", [row['volume'], magazine_id])
 
 
-        #insert issue
-        statement_issue = insert_into_table(
-            {'num' : row['issue'], 'volume_id': volume_id}, 'issues'
-        )
-        f.write(statement_issue+'\n')
-        db.insert_db(statement_issue)
-        issue_id =set_global('issue', [row['issue'], volume_id, magazine_id])
+    #insert issue
+    statement_issue = insert_into_table(
+        {'num' : row['issue'], 'volume_id': volume_id}, 'issues'
+    )
+    ##f.write(statement_issue+'\n')
+    db.insert_db(statement_issue)
+    issue_id =set_global('issue', [row['issue'], volume_id, magazine_id])
 
     return [magazine_id, volume_id, issue_id]
 
 
 def insert_multi(row, page_images, globals):
 
-    with open('try.sql', 'a', encoding='utf-8') as f:
-        # page insert
-        #page_id = -1
-        p_text = 0 # zda u tech captions vsechno bude v poradku
-        if (page_images[row['page index']] == row['image number']):
-            if (len(row['caption']) > 0): p_text = 1
-            statement_page = insert_into_table(
-                {'num' : row['page number'], 'p_index' : row['page index'],
-                'num_repro' : page_images[row['page index']], 'issue_id' : globals[2], 'p_text' : p_text}, 'pages'
-            )
-            f.write(statement_page+'\n')
-            #tady se zeptat na page id
-            db.insert_db(statement_page)
-        page_id = set_global('page', [])
+    ##with open('try.sql', 'a', encoding='utf-8') as f:
+    # page insert
+    p_text = 0 # zda u tech captions vsechno bude v poradku
+    if (len(row['caption']) > 0): p_text = 1
 
-        # repro insert
-        width = abs(int(row['x1']) - int(row['x2']))
-        height = abs(int(row['y1']) - int(row['y2']))
-
-        statement_repro = insert_into_table(
-            {'page_id': page_id, 'x1' : row['x1'], 'y1' : row['y1'], 'x2' : row['x2'], # for now page_index not page_id
-             'y2' : row['y2'], 'width' : width, 'height' : height, 'dimension' : 'Pixels',
-             'area' : row['area in percentage'], 'origin_image' : row['image'] }, 'reproductions'
+    if (row['page index'] in page_images):
+        statement_page = insert_into_table(
+            {'num' : row['page number'], 'p_index' : row['page index'],
+            'num_repro' : page_images[row['page index']], 'issue_id' : globals[2], 'p_text' : p_text}, 'pages'
         )
-        f.write(statement_repro+'\n')
+        ##f.write(statement_page+'\n')
+        #tady se zeptat na page id
+        db.insert_db(statement_page)
+        del page_images[row['page index']]
+    page_id = set_global('page', [])
 
-        # caption insert
-        if (p_text == 1):
-            statement_caption = insert_into_table(
-                {'page_id' : page_id, 'text' : row['caption'] }, 'captions' # page_index not page_id
-            )
-            f.write(statement_caption+'\n')
+    # repro insert
+    width = abs(int(row['x1']) - int(row['x2']))
+    height = abs(int(row['y1']) - int(row['y2']))
 
+    statement_repro = insert_into_table(
+        {'page_id': page_id, 'x1' : row['x1'], 'y1' : row['y1'], 'x2' : row['x2'], # for now page_index not page_id
+            'y2' : row['y2'], 'width' : width, 'height' : height, 'dimension' : 'Pixels',
+            'area' : row['area in percentage'], 'original_image' : row['image'] }, 'reproductions'
+    )
 
+    db.insert_db(statement_repro)
+    ##f.write(statement_repro+'\n')
+
+    # caption insert
+    if (p_text == 1):
+        statement_caption = insert_into_table(
+            {'page_id' : page_id, 'text' : row['caption'] }, 'captions' # page_index not page_id
+        )
+        db.insert_db(statement_caption)
+        ##f.write(statement_caption+'\n')
 
 

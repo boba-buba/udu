@@ -52,12 +52,16 @@ CREATE TABLE prm_d.people (
 
 CREATE TABLE prm_d.place_action(
     person_id INT,
-    start_time DATE,
-    finish_time DATE,
+    year_start INT,
+    month_start INT,
+    day_start INT,
+    year_end INT,
+    month_end INT,
+    day_end INT,
     place_id INT,
     FOREIGN KEY (person_id) REFERENCES prm_d.people(id),
     FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
-    PRIMARY KEY (person_id, start_time, finish_time, place_id)
+    PRIMARY KEY (person_id, year_start, month_start, day_start, year_end, month_end, day_end, place_id)
 
 );
 CREATE TABLE prm_d.organizations(
@@ -70,21 +74,29 @@ CREATE TABLE prm_d.organizations(
 CREATE TABLE prm_d.people_organizations(
     organization_id INT NOT NULL,
     person_id INT NOT NULL,
-    time_start DATE,
-    time_end DATE,
+    year_start INT,
+    month_start INT,
+    day_start INT,
+    year_end INT,
+    month_end INT,
+    day_end INT,
     FOREIGN KEY (organization_id) REFERENCES prm_d.organizations(id),
     FOREIGN KEY (person_id) REFERENCES prm_d.people(id),
-    PRIMARY KEY (organization_id, person_id, time_start, time_end)
+    PRIMARY KEY (organization_id, person_id, year_start, month_start, day_start, year_end, month_end, day_end)
 );
 
 CREATE TABLE prm_d.organization_place(
     organization_id INT NOT NULL,
     place_id INT NOT NULL,
-    time_start DATE,
-    time_end DATE,
+    year_start INT,
+    month_start INT,
+    day_start INT,
+    year_end INT,
+    month_end INT,
+    day_end INT,
     FOREIGN KEY (organization_id) REFERENCES prm_d.organizations(id),
     FOREIGN KEY (place_id) REFERENCES prm_d.places(id),
-    PRIMARY KEY (organization_id, place_id, time_start, time_end)
+    PRIMARY KEY (organization_id, place_id, year_start, month_start, day_start, year_end, month_end, day_end)
 );
 
 

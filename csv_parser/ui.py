@@ -12,7 +12,7 @@ class Window(tk.Frame):
         self.show_widgets()
 
     def show_widgets(self):
-        self.master.title("ImageExtractor")
+        self.master.title("DBhandler")
         self.master.geometry("500x500")
         button1= tk.Button(self, text="Query", command=self.query_handler)
         button1.pack(padx=20, pady=30)

@@ -4,6 +4,19 @@ from db_conn import db_connection
 
 db = db_connection()
 
+def parse_caption(text):
+    new_text = text.replace("'", "\\" + "'")
+    #new_text = new_text.replace("(", "\\" + "()")
+    return new_text
+
+
+def is_in_db(query):
+    db.execute_query(query)
+    result = db.temp_result
+    if (len(result) != 0):
+        return result[0][0]
+    return 0
+
 def is_float(value):
   if value is None:
       return False
@@ -45,7 +58,6 @@ def set_global(column, info):
             db.execute_query(f"select id from volumes where num={info[0]} and magazine_id={info[1]};")
             volume = db.temp_result
             if (len(volume) > 0):
-                print(volume)
                 return volume[0][0]
         case "issue":
             db.execute_query(f"select i.id from issues i inner join volumes v on i.volume_id=v.id inner join magazines m on v.magazine_id=m.id where i.num={info[0]} and v.id={info[1]} and m.id={info[2]};")
@@ -63,23 +75,24 @@ def set_global(column, info):
 
 def insert_statement(row):
 
-    ##with open('try.sql', 'a', encoding='utf-8') as f:
     #insert magazine
-    statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
-    ##f.write(statement_magazine+'\n')
-    db.insert_db(statement_magazine)
+    magazine_name = row['journal name']
+    magazine_query = f'select id from magazines where name="{magazine_name}";'
+    if (is_in_db(magazine_query) == 0):
+        statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
+        db.insert_db(statement_magazine)
+
     magazine_id = set_global("magazine", [row['journal name']])
 
     #insert volume
     result = row['year'].split(" ") #check for 2 elements
     time_start = result[0].split("-") #yyyy mm dd
     time_end = result[1].split("-")
-    print(time_start)
+
     statement_volume = insert_into_table(
         {'num' : row['volume'], 'magazine_id' : magazine_id, 'year_start' : time_start[0], 'month_start' : time_start[1],
             'day_start' : time_start[2], 'year_end' : time_end[0], 'month_end' : time_end[1], 'day_end' :time_end[2] }, 'volumes'
     )
-    ##f.write(statement_volume+'\n')
     db.insert_db(statement_volume)
     volume_id = set_global("volume", [row['volume'], magazine_id])
 
@@ -88,7 +101,6 @@ def insert_statement(row):
     statement_issue = insert_into_table(
         {'num' : row['issue'], 'volume_id': volume_id}, 'issues'
     )
-    ##f.write(statement_issue+'\n')
     db.insert_db(statement_issue)
     issue_id =set_global('issue', [row['issue'], volume_id, magazine_id])
 
@@ -97,7 +109,6 @@ def insert_statement(row):
 
 def insert_multi(row, page_images, globals):
 
-    ##with open('try.sql', 'a', encoding='utf-8') as f:
     # page insert
     p_text = 0 # zda u tech captions vsechno bude v poradku
     if (len(row['caption']) > 0): p_text = 1
@@ -107,7 +118,6 @@ def insert_multi(row, page_images, globals):
             {'num' : row['page number'], 'p_index' : row['page index'],
             'num_repro' : page_images[row['page index']], 'issue_id' : globals[2], 'p_text' : p_text}, 'pages'
         )
-        ##f.write(statement_page+'\n')
         #tady se zeptat na page id
         db.insert_db(statement_page)
         del page_images[row['page index']]
@@ -124,14 +134,13 @@ def insert_multi(row, page_images, globals):
     )
 
     db.insert_db(statement_repro)
-    ##f.write(statement_repro+'\n')
 
     # caption insert
     if (p_text == 1):
+        caption = parse_caption(row['caption'])
         statement_caption = insert_into_table(
-            {'page_id' : page_id, 'text' : row['caption'] }, 'captions' # page_index not page_id
+            {'page_id' : page_id, 'text' : caption }, 'captions' # page_index not page_id
         )
         db.insert_db(statement_caption)
-        ##f.write(statement_caption+'\n')
 
 

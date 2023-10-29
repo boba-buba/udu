@@ -61,16 +61,17 @@ class db_connection:
             cursor = cnx.cursor()
             cursor.execute(statement)
             cnx.commit()
-            print(cursor.rowcount, "Record(s) inserted successfully")
+            #print(cursor.rowcount, "Record(s) inserted successfully")
             cursor.close()
 
         except mysql.connector.Error as error:
+            print(statement)
             print("Failed to insert record {}".format(error))
 
         finally:
             if cnx.is_connected():
                 cnx.close()
-                print("MySQL connection is closed")
+                #print("MySQL connection is closed")
 
     def execute_query(self, query):
 
@@ -84,12 +85,13 @@ class db_connection:
             cursor.close()
 
         except mysql.connector.Error as error:
+            print(query)
             print("Failed to insert record {}".format(error))
 
         finally:
             if cnx.is_connected():
                 cnx.close()
-                print("MySQL connection is closed")
+                #print("MySQL connection is closed")
 
 
 

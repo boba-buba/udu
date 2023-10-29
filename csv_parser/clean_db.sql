@@ -1,0 +1,12 @@
+delete from captions;
+delete from reproductions;
+delete from pages;
+delete from issues;
+delete from volumes;
+delete from magazines;
+alter table captions auto_increment=1;
+alter table reproductions auto_increment=1;
+alter table pages auto_increment=1;
+alter table issues auto_increment=1;
+alter table volumes auto_increment=1;
+alter table magazines auto_increment=1;

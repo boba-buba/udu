@@ -50,22 +50,22 @@ def insert_into_table(dict_values, table_name):
 def set_global(column, info):
     match column:
         case "magazine":
-            db.execute_query(f'select id from magazines where name="{info[0]}";')
+            db.execute_query(f'select id_magazine from magazines where name="{info[0]}";')
             magazine = db.temp_result
             if (len(magazine) > 0):
                 return magazine[0][0]
         case "volume":
-            db.execute_query(f"select id from volumes where num={info[0]} and magazine_id={info[1]};")
+            db.execute_query(f"select id_volume from volumes where num={info[0]} and magazine_id={info[1]};")
             volume = db.temp_result
             if (len(volume) > 0):
                 return volume[0][0]
         case "issue":
-            db.execute_query(f"select i.id from issues i inner join volumes v on i.volume_id=v.id inner join magazines m on v.magazine_id=m.id where i.num={info[0]} and v.id={info[1]} and m.id={info[2]};")
+            db.execute_query(f"select i.id_issue from issues i inner join volumes v on i.volume_id=v.id_volume inner join magazines m on v.magazine_id=m.id_magazine where i.num={info[0]} and v.id_volume={info[1]} and m.id_magazine={info[2]};")
             issue = db.temp_result
             if (len(issue) > 0):
                 return issue[0][0]
         case "page":
-            db.execute_query("SELECT id FROM pages WHERE id=(SELECT MAX(id) FROM pages);")
+            db.execute_query("SELECT id_page FROM pages WHERE id_page=(SELECT MAX(id_page) FROM pages);")
             page = db.temp_result
             if (len(page) > 0):
                 return page[0][0]
@@ -77,7 +77,7 @@ def insert_statement(row):
 
     #insert magazine
     magazine_name = row['journal name']
-    magazine_query = f'select id from magazines where name="{magazine_name}";'
+    magazine_query = f'select id_magazine from magazines where name="{magazine_name}";'
     if (is_in_db(magazine_query) == 0):
         statement_magazine = insert_into_table({'name' : row['journal name']}, "magazines")
         db.insert_db(statement_magazine)

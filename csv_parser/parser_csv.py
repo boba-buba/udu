@@ -3,7 +3,7 @@ import pandas as ps
 from statements_insrt import insert_statement, insert_multi
 #journal name,issue,volume,year,page number,page index,image number,caption,area in percentage,x1,y1,x2,y2,image
 
-file = r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXXIX_data.csv"
+file = r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXX_data.csv"
 #file = r"C:\Users\ncoro\udu\csv_parser\csv_files\Volné směry_XXXVII_1_data.csv"
 
 def parse_pages(file_name):

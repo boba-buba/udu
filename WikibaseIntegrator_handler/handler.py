@@ -2,16 +2,24 @@ from wikibaseintegrator import WikibaseIntegrator, wbi_login
 from wikibaseintegrator.datatypes import Item, Property
 from wikibaseintegrator.models import Claim, Snak, Qualifiers
 from wikibaseintegrator.wbi_config import config as wbi_config
-
 import json
+
+general_properties = {"instance_of" : "P1"}
+
 
 wbi_config['MEDIAWIKI_API_URL'] = 'http://147.231.55.155/w/api.php'
 wbi_config['SPARQL_ENDPOINT_URL'] = 'http://147.231.55.155:8834/proxy/wdqs/bigdata/namespace/wdq/sparql'
 wbi_config['WIKIBASE_URL'] = 'http://147.231.55.155'
 
 login_instance = wbi_login.Clientlogin(user="admin", password="2pigsontheroof", mediawiki_api_url="http://147.231.55.155/w/api.php")
-
 wbi = WikibaseIntegrator(login=login_instance)
+
+
+
+def get_json_to_file(id):
+    with open("wikibase.json", 'w', encoding="utf-8") as f:
+        f.write(json.dumps(get_item(id).get_json()))
+        f.flush()
 
 
 def get_item(id):
@@ -20,6 +28,7 @@ def get_item(id):
 def get_property(id):
     return wbi.property.get(entity_id=id)
 
+'''
 def insert_new_item(data): # dict
     # minimal format of the data {'label': 'smth', 'description' : 'smth', 'aliases' : ['smth', ...]}
     item = wbi.item.new()
@@ -53,8 +62,8 @@ def update_item_place():
     #coordinates
     return
 
-property_data = {"label" : "place of death", "description" : "most specific known (e.g. city instead of country, or hospital instead of city) death location of a person, animal or fictional character",
-        "aliases" : [ "deathplace", "died in", "death place", "POD", "location of death" ]  }
+#property_data = {"label" : "place of death", "description" : "most specific known (e.g. city instead of country, or hospital instead of city) death location of a person, animal or fictional character",
+#        "aliases" : [ "deathplace", "died in", "death place", "POD", "location of death" ]  }
 
 def insert_new_property(data):
     new_property = wbi.property.new()
@@ -76,10 +85,7 @@ def update_property_wikidataPID(property_id, wikidataPID):
     property_to_update.add_claims(claim)
     itemEnt = property_to_update.write(login=login_instance)
 
-
-#insert_new_property(data=property_data)
-#update_property_wikidataPID("P14")
-
+'''
 '''
 with open("prm.json", 'a', encoding="utf-8") as f:
     f.write(json.dumps(get_property("P13").get_json()))

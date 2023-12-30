@@ -1,0 +1,3 @@
+- Obecnejsi format pro vsechny vlozeni dat
+- Dodat vsechny properties a entity pro instance of a tak (zakladni)
+- Jak referencovat wikiadata

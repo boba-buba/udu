@@ -3,36 +3,44 @@ from handler import wbi
 from handler import general_properties
 
 import handler
+import query_handler
 
 class Volume:
 
-    volume_properties = {"volume" : "P27", "part_of" : "P29", "title" : "P22"}
-    volume_qid = "Q10"
+    volume_properties = {"volume" : "P27", "title" : "P22"}
+    qid = "Q10"
     volume_numeric_id = 10
+    volume_qid = -1
+    volume_title = ""
 
-    def volume_insert_new(self, data):
-        #data = {vol_number : ..., magazine_name : ... , publication date start: ..., publication date end: ...} date in what foramt
+    def volume_in_db(self, title):
+        self.volume_qid = query_handler.query_db(title, "volume")
+        return self.volume_qid
+
+
+    def volume_insert_new(self, data, lang):
+        #data = {vol_number : ..., magazine : ... , magazine_numeric_id: ..., start: .., end: ..., precision: ...} date in what foramt
         item = wbi.item.new()
-        label = data['magazine'] + ", Vol." + data["vol_number"]
+        label = data['magazine'] + ", Vol. " + data["vol_number"]
         item.labels.set(language='en', value=label)
 
-        #description ???
-        #######
-        instance_snack = handler.Snack(
+        #instance of
+        instance_snack = handler.Snak(
             property_number=general_properties["instance_of"],
             datatype="wikibase-item",
             datavalue={
                 "value": {
                     "entity-type": "item",
                     "numeric-id": self.volume_numeric_id,
-                    "id": self.volume_qid
+                    "id": self.qid
                 },
                 "type": "wikibase-entityid"
             }
         )
         instance_claim = handler.Claim()
         instance_claim.mainsnak = instance_snack
-        ######
+
+        #volume
         volume_snack = handler.Snak(
             property_number=self.volume_properties["volume"],
             datatype="string",
@@ -43,23 +51,84 @@ class Volume:
         )
         volume_claim=handler.Claim()
         volume_claim.mainsnak = volume_snack
-    #####
-    ## publication date 
-    # start time
-    # end time
 
-    # Q116172661
-    #SELECT ?item ?itemLabel ?itemDescription ?book ?bookLabel WHERE {
-    #   ?item wdt:P31 wd:Q1238720 .
-    #   ?item wdt:P361 ?book .
-    #   ?book wdt:P31 wd:Q41298 .
-    # SERVICE bla bla
-    # }
+        #part of
+        part_of_snak = handler.Snak(
+            property_number=general_properties["part_of"],
+            datatype="wikibaseitem",
+            datavalue={
+                "value": {
+                    "entity-type": "item",
+                    "numeric-id": data["magazine_numeric_id"],
+                    "id": "Q" + str(data["magazine_numeric_id"])
+                },
+                "type" : "wikibase-entityid"
+            }
+        )
+        part_of_claim = handler.Claim()
+        part_of_claim.mainsnak = part_of_snak
 
-        item.add_claims([instance_claim, volume_claim])
+        #title
+        title_snack = handler.Snak(
+            property_number=general_properties["title"],
+            datatype="monolingualtext",
+            datavalue={
+                "value": {
+                    "text": label,
+                    "language": lang
+                },
+                "type": "monolingualtext"
+            }
+        )
+        title_claim = handler.Claim()
+        title_claim.mainsnak = title_snack
+
+        item.add_claims([instance_claim, volume_claim, part_of_claim, title_claim])
+
+        #time
+        if "start" in data:
+            inception_snack = handler.Snak(
+                property_number=general_properties["inception"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": data["start"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": data["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            inception_claim = handler.Claim()
+            inception_claim.mainsnak = inception_snack
+            item.add_claims(inception_claim)
+
+        if "end" in data:
+            dissolved_snack = handler.Snak(
+                property_number=general_properties["dissolved"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": data["end"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": data["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            dissolved_claim = handler.Claim()
+            dissolved_claim.mainsnak = dissolved_snack
+            item.add_claims(dissolved_snack)
+
 
         itemEnt = item.write(login=login_instance)
-
+    """
     def volume_handle(self, data): #data magazine title, volume number
         magazine_name = data['name']
         magazine_id = self.magazine_in_db(magazine_name=magazine_name)
@@ -68,4 +137,4 @@ class Volume:
             self.magazine_insert_new(data, lang)
         else:
             if len(data) > 2: #miminum name and lang
-                self.magazine_update(data)
+                self.magazine_update(data)"""

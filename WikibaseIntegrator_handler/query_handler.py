@@ -8,6 +8,14 @@ def query_db(title, entity):
         query = 'SELECT ?item WHERE { ?item wdt:P1 wd:Q10; wdt:P22 ?title . FILTER(STR(?title) ="' +  title + '"). SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}'
     elif entity == "issue":
         query = 'SELECT ?item WHERE { ?item wdt:P1 wd:Q11; wdt:P22 ?title . FILTER(STR(?title) ="' +  title + '"). SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}'
+    elif entity == "lang":
+        query = 'SELECT ?item WHERE { ?item ?label "' + title +'"@en .}' #must be Czech, French, Russian, German
+    elif entity == "page":
+        query = 'SELECT ?item WHERE { ?item ?label "' + title +'"@en .}'
+    elif entity == "repro":
+        query = 'SELECT ?item WHERE { ?item ?label "' + title +'"@en .}'
+    elif entity == "caption":
+        query = 'SELECT ?item WHERE { ?item ?label "' + title +'"@en .}' # jestli label neni unikatni, je potreba hledat podle textu
     else:
         return -1
     result = execute_query(query)
@@ -38,3 +46,5 @@ print(query_db("Independent directions, vol. XXXVII, issue 1", "issue"))
 print(query_db("mag", "magazine"))
 print(query_db(mag, "issue"))
 print(query_db(mag, "page"))#"""
+
+#print(query_db("Czech", "lang"))

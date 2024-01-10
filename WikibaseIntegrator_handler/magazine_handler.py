@@ -36,6 +36,15 @@ class Magazine:
         elif lang == "de":
             item.labels.set(language='de', value=data['label_de'])
             item.labels.set(language='en', value=data['label_de'])
+        elif lang == "fr":
+            item.labels.set(language='fr', value=data['label_fr'])
+            item.labels.set(language='en', value=data['label_fr'])
+        elif lang == "ru":
+            item.labels.set(language='ru', value=data['label_ru'])
+            item.labels.set(language='en', value=data['label_ru'])
+        else:
+            item.labels.set(language='en', value=data['label']) #default option is english
+
 
         #instance of
         instance_snack = handler.Snak(
@@ -71,11 +80,11 @@ class Magazine:
         item.add_claims([instance_claim, title_claim])
 
         itemEnt = item.write(login=login_instance)
-        print(itemEnt)
+        #print(itemEnt)
 
     def magazine_update(self, data):
         magazine_item = handler.get_item()
-"""
+    """
     def magazine_handle(self, data, request):
         magazine_name = data['name']
         magazine_id = self.magazine_in_db(magazine_name=magazine_name)
@@ -85,7 +94,7 @@ class Magazine:
         else:
             if len(data) > 2: #miminum name and lang
                 self.magazine_update(data)
-"""
+    """
 
 
 

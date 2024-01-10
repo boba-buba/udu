@@ -37,4 +37,4 @@ def parse_csv(file_name, lang='en'):
 
 
 #parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\1901_Deutsche_Kunst_und_Dekoration_data.csv", 'de')
-parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXXI_data.csv", 'cs')
+parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXXVII_2_data.csv", 'cs')

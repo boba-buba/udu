@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0, r'C:\Users\ncoro\udu\WikibaseIntegrator_handler')
 import magazine_handler
 import volume_handler
+import issue_handler
 
 import json
 
@@ -39,6 +40,7 @@ def parse_date(data):
 
 magazine = magazine_handler.Magazine()
 volume = volume_handler.Volume()
+issue = issue_handler.Issue()
 
 def process_first_row(row, lang = 'en'):
 
@@ -56,6 +58,7 @@ def process_first_row(row, lang = 'en'):
 
 
     #insert volume
+    #if row["volume"] == "NA" ??
     result = row['year'].split(" ") #check for 2 elements
     volume_data = parse_date(result)
     volume_data["vol_number"] = row["volume"]
@@ -63,25 +66,37 @@ def process_first_row(row, lang = 'en'):
     volume_data["magazine"] = magazine_name
     volume_data["magazine_numeric_id"] = int(magazine.magazine_in_db(magazine_name)[1:])
     if volume.volume_in_db(volume_data["title"]) == -1:
-        with open("debug.txt", 'w', encoding="utf-8") as f:
-            f.write(json.dumps(volume_data))
-            f.flush()
+        # with open("debug.txt", 'w', encoding="utf-8") as f:
+        #     f.write(json.dumps(volume_data))
+        #     f.flush()
         #print(volume_data)
         volume.volume_insert_new(volume_data, lang)
     else:
-        print(f"volume is already in db")
+        print(f"Volume is already in db")
 
 
-    """
+
     #insert issue
-    statement_issue = insert_into_table(
-        {'num' : row['issue'], 'volume_id': volume_id}, 'issues'
-    )
-    db.insert_db(statement_issue)
-    issue_id =set_global('issue', [row['issue'], volume_id, magazine_id])
+    # if row["issue"] == "NA"
+    issue_data = {}
+    issue_data["issue_title"] = row['journal name'] + ', Vol. ' + row["volume"] + ', issue ' + row['issue']
+    issue_data["volume_numeric_id"] = int(volume.volume_in_db(volume_data["title"])[1:])
+    issue_data["lang"] = lang
+    issue_data["issue_number"] = row["issue"]
 
-    return [magazine_id, volume_id, issue_id]
-    """
+    if issue.issue_in_db(issue_data["issue_title"]) == -1:
+        with open("debug.txt", 'w', encoding="utf-8") as f:
+            f.write(json.dumps(issue_data))
+            f.flush()
+
+        issue.issue_insert_new(issue_data, lang=lang)
+    else:
+        print(f"Issue already in db")
+
+
+
+
+
     return []
 
 

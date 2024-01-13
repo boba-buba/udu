@@ -1,7 +1,7 @@
 import csv
 import pandas as ps
 from data_handler import process_first_row
-from data_handler import process_row 
+from data_handler import process_row, parse_reproductions, parse_captions
 #journal name,issue,volume,year,page number,page index,image number,caption,area in percentage,x1,y1,x2,y2,image,width_page,height_page,language
 #number of pages
 
@@ -34,6 +34,20 @@ def parse_csv(file_name):
         process_row(first_row, page_images)
         for row in reader:
             process_row(row, page_images)
+        f.flush()
+
+    with open(file_name, 'r', encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter=';')
+
+        for row in reader:
+            parse_reproductions(row)
+        f.flush()
+
+    with open(file_name, 'r', encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter=';')
+
+        for row in reader:
+            parse_captions(row)
         f.flush()
 
 

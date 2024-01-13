@@ -64,9 +64,9 @@ def process_first_row(row):
     volume.volume_title = magazine.magazine_name + ", vol. " + row["volume"]
     result = row['year'].split(" ") #check for 2 elements
     volume_data = parse_date(result)
+
     volume_data["vol_number"] = row["volume"]
     volume_data["title"] = volume.volume_title
-    #volume_data["magazine"] = magazine.magazine_name
     volume_data["magazine_numeric_id"] = int(magazine.magazine_qid[1:])
     if volume.volume_in_db() == -1:
         volume.volume_insert_new(volume_data, row["language"])
@@ -91,7 +91,6 @@ def process_first_row(row):
 
     if issue.issue_in_db() == -1:
         issue.issue_insert_new(issue_data, issue_data["lang"])
-        issue.issue_in_db()
     else:
         print(f"Issue already in db")
 
@@ -121,7 +120,7 @@ def process_row(row, page_num_of_repro):
             page.page_insert_new(page_data, row["language"])
             page.page_in_db()
         del page_num_of_repro[row["page number"]]
-
+    """
     # repro insert data = { repro_title, area, on_page, x1, y1, x2, y2, width, height }
     width = abs(int(row['x1']) - int(row['x2']))
     height = abs(int(row['y1']) - int(row['y2']))
@@ -147,9 +146,45 @@ def process_row(row, page_num_of_repro):
         if caption.caption_in_db() == -1:
             caption_data = {"caption_title" : caption.caption_title, "text" : row["caption"], "on_page" : int(page_qid[1:]), "repro" : int(repro_qid[1:])}
             caption.caption_insert_new(caption_data, row["language"])
+    """
+
+def parse_reproductions(row):
+    # repro insert data = { repro_title, area, on_page, x1, y1, x2, y2, width, height }
+    width = abs(int(row['x1']) - int(row['x2']))
+    height = abs(int(row['y1']) - int(row['y2']))
+
+    page.page_title = issue.issue_title + ", p. " + row["page number"]
+    page_qid = page.page_in_db()
+    while (page_qid == -1):
+        page_qid = page.page_in_db()
+
+    repro.repro_title = page.page_title + ", repro " + row["image number"]
+    if repro.repro_in_db() == -1:
+
+        repro_data = {"repro_title" :  repro.repro_title, "area" : row["area in percentage"], "on_page" : int(page_qid[1:]), "x1" : row["x1"], "y1" : row["y1"],
+                     "x2" : row["x2"], "y2": row["y2"], "width" : width, "height" : height}
+        repro.repro_insert_new(repro_data, row["language"])
+        repro.repro_in_db()
 
 
+def parse_captions(row):
+    # caption insert #data = { caption_title, text, on_page, repro}
+    if row["caption"] != "":
 
+        page.page_title = issue.issue_title + ", p. " + row["page number"]
+        page_qid = page.page_in_db()
+        while (page_qid == -1):
+            page_qid = page.page_in_db()
+
+        repro.repro_title = page.page_title + ", repro " + row["image number"]
+        repro_qid = repro.repro_in_db()
+        while (repro_qid == -1):
+            repro_qid = repro.repro_in_db()
+
+        caption.caption_title = repro.repro_title + ", caption"
+        if caption.caption_in_db() == -1:
+            caption_data = {"caption_title" : caption.caption_title, "text" : row["caption"], "on_page" : int(page.page_qid[1:]), "repro" : int(repro_qid[1:])}
+            caption.caption_insert_new(caption_data, row["language"])
 
 
 

@@ -16,8 +16,8 @@ class Page:
     def page_in_db(self):
         self.page_qid = query_handler.query_db(self.page_title, "page")
         return self.page_qid
-    #data = page_title, page_number, page_index, num_of_repro, has_text, iss_vol_numeric_id
-    def mpage_insert_new(self, data, lang):
+    #data = page_title, page_number, page_index, num_of_repro, has_text, iss_vol_numeric_id, width_page, height_page
+    def page_insert_new(self, data, lang):
         item = wbi.item.new()
         label = data["page_title"]
         item.labels.set(language='en', value=label)
@@ -63,6 +63,7 @@ class Page:
             )
             page_index_claim=handler.Claim()
             page_index_claim.mainsnak = page_index_snak
+            item.add_claims(page_index_claim)
 
         #part of
         part_of_snak = handler.Snak(
@@ -95,6 +96,36 @@ class Page:
         num_of_repro_claim = handler.Claim()
         num_of_repro_claim.mainsnak = num_of_repro_snak
 
+        #width_page
+        width_snak = handler.Snak(
+            property_number=handler.general_properties["width"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount" : "+" + str(data["width_page"]),
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type" : "quantity"
+            }
+        )
+        width_claim = handler.Claim()
+        width_claim.mainsnak = width_snak
+
+        #height_page
+        height_snak = handler.Snak(
+            property_number=handler.general_properties["height"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount" : "+" + str(data["height_page"]),
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type": "quantity"
+            }
+        )
+        height_claim = handler.Claim()
+        height_claim.mainsnak = height_snak
+
         #has text
         value = "no"
         if data["has_text"] == 1: value = "yes"
@@ -109,7 +140,8 @@ class Page:
         has_text_claim = handler.Claim()
         has_text_claim.mainsnak = has_text_snak
 
-        item.add_claims([instance_claim, page_number_claim, page_index_claim, part_of_claim, num_of_repro_claim, has_text_claim])
+
+        item.add_claims([instance_claim, page_number_claim, part_of_claim, num_of_repro_claim, has_text_claim, width_claim, height_claim])
         itemEnt = item.write(login=login_instance)
 
     def page_update(self, data):

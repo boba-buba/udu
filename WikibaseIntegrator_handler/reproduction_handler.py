@@ -101,7 +101,82 @@ class Repro:
         height_claim.mainsnak = height_snak
 
         #TODO page placement
+        #page_placement
+        page_placement_snak = handler.Snak(
+            property_number=self.repro_properties["page_placement"],
+            datatype="string",
+            datavalue={
+                "value": data["x1"] + ";" + data["y1"] + ";" + data["x2"] + ";" + data["y2"],
+                "type" : "string"
+            }
+        )
+        page_placement_claim = handler.Claim()
+        page_placement_claim.mainsnak = page_placement_snak
 
-        item.add_claims([instance_claim, area_claim, on_page_claim, width_claim, height_claim])
+        x1_snak = handler.Snak(
+            property_number=self.repro_properties["x1"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount": "+" + data["x1"],
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type" : "quantity"
+            }
+        )
+        x1_claim = handler.Claim()
+        x1_claim.mainsnak = x1_snak
+
+        y1_snak = handler.Snak(
+            property_number=self.repro_properties["y1"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount": "+" + data["y1"],
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type" : "quantity"
+            }
+        )
+        y1_claim = handler.Claim()
+        y1_claim.mainsnak = y1_snak
+
+        x2_snak = handler.Snak(
+            property_number=self.repro_properties["x2"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount": "+" + data["x2"],
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type" : "quantity"
+            }
+        )
+        x2_claim = handler.Claim()
+        x2_claim.mainsnak = x2_snak
+
+        y2_snak = handler.Snak(
+            property_number=self.repro_properties["y2"],
+            datatype="quantity",
+            datavalue={
+                "value": {
+                    "amount": "+" + data["y2"],
+                    "unit" : "http://147.231.55.155/entity/Q36"
+                },
+                "type" : "quantity"
+            }
+        )
+        y2_claim = handler.Claim()
+        y2_claim.mainsnak = y2_snak
+
+        qualifier = handler.Qualifiers()
+        qualifier.add(x1_claim)
+        qualifier.add(y1_claim)
+        qualifier.add(x2_claim)
+        qualifier.add(y2_claim)
+
+        page_placement_claim.qualifiers = [x1_claim, y1_claim, x2_claim, y2_claim]
+
+        item.add_claims([instance_claim, area_claim, on_page_claim, width_claim, height_claim, page_placement_claim])
         itemEnt = item.write(login=login_instance)
 

@@ -7,14 +7,14 @@ import query_handler
 from wikibaseintegrator import wbi_helpers
 
 class Issue:
-    issue_properties = {"issue" : "P34"}
+    issue_properties = {"issue" : "P34", "issue_number": "P52"}
     qid = "Q11"
     issue_numeric_id = 11
     issue_qid = -1
-    name = ""
+    issue_title = ""
 
-    def issue_in_db(self, issue_name): # must return QID or -1
-        self.issue_qid = query_handler.query_db(issue_name, "issue")
+    def issue_in_db(self): # must return QID or -1
+        self.issue_qid = query_handler.query_db(self.issue_title, "issue")
         return self.issue_qid
 
     def issue_insert_new(self, data, lang):

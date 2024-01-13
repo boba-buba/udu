@@ -2,7 +2,7 @@ import handler
 import json
 
 
-entity = handler.wbi.item.get("Q28")
+entity = handler.wbi.item.get("Q34")
 
 
 

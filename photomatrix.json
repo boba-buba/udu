@@ -2,7 +2,7 @@
     "labels": {
         "en": {
             "language": "en",
-            "value": "Independent directions, Vol. XXX"
+            "value": "Voln\u00e9 sm\u011bry, vol. 37, issue 01, p. 5, repro 1"
         }
     },
     "descriptions": {},
@@ -18,183 +18,174 @@
                     "datavalue": {
                         "value": {
                             "entity-type": "item",
-                            "numeric-id": 10,
-                            "id": "Q10"
+                            "numeric-id": 33,
+                            "id": "Q33"
                         },
                         "type": "wikibase-entityid"
                     }
                 },
                 "type": "statement",
-                "id": "Q28$3416ce67-40fd-d2a0-6629-11209bb75157",
+                "id": "Q34$ac4c1e18-487e-c655-c259-ff305d80b878",
                 "rank": "normal"
             }
         ],
-        "P29": [
+        "P46": [
             {
                 "mainsnak": {
                     "snaktype": "value",
-                    "property": "P29",
+                    "property": "P46",
+                    "datatype": "quantity",
+                    "datavalue": {
+                        "value": {
+                            "amount": "+0.49",
+                            "unit": "http://147.231.55.155/entity/Q35"
+                        },
+                        "type": "quantity"
+                    }
+                },
+                "type": "statement",
+                "id": "Q34$c7e9bdd5-4587-0d46-ce4f-aec6dc814ce7",
+                "rank": "normal"
+            }
+        ],
+        "P47": [
+            {
+                "mainsnak": {
+                    "snaktype": "value",
+                    "property": "P47",
                     "datatype": "wikibase-item",
                     "datavalue": {
                         "value": {
                             "entity-type": "item",
-                            "numeric-id": 8,
-                            "id": "Q8"
+                            "numeric-id": 32,
+                            "id": "Q32"
                         },
                         "type": "wikibase-entityid"
                     }
                 },
                 "type": "statement",
-                "id": "Q28$62b365fb-4fda-13c5-960f-82a87d882146",
+                "id": "Q34$213a5de9-440b-04ee-5335-70bc46ca1c16",
                 "rank": "normal"
             }
         ],
-        "P27": [
+        "P48": [
             {
                 "mainsnak": {
                     "snaktype": "value",
-                    "property": "P27",
+                    "property": "P48",
                     "datatype": "string",
                     "datavalue": {
-                        "value": "XXX",
+                        "value": "587;403;6167;7247",
                         "type": "string"
                     }
                 },
                 "type": "statement",
-                "id": "Q28$7fac7cae-4beb-5b47-d2e6-aa5c85a6e082",
-                "rank": "normal"
-            }
-        ],
-        "P22": [
-            {
-                "mainsnak": {
-                    "snaktype": "value",
-                    "property": "P22",
-                    "datatype": "monolingualtext",
-                    "datavalue": {
-                        "value": {
-                            "text": "Voln\u00e9 sm\u011bry, Vol. XXX",
-                            "language": "cs"
-                        },
-                        "type": "monolingualtext"
-                    }
-                },
-                "type": "statement",
-                "id": "Q28$b92462df-4ba1-3b94-88df-9b3ff4125418",
-                "rank": "normal"
-            }
-        ],
-        "P30": [
-            {
-                "mainsnak": {
-                    "snaktype": "value",
-                    "property": "P30",
-                    "datatype": "time",
-                    "datavalue": {
-                        "value": {
-                            "time": "+1934-00-00T00:00:00Z",
-                            "timezone": 0,
-                            "before": 0,
-                            "after": 0,
-                            "precision": 9,
-                            "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
-                        },
-                        "type": "time"
-                    }
-                },
-                "type": "statement",
-                "id": "Q28$93b93d10-4e25-5a89-1b2f-49e36aa517f9",
+                "id": "Q34$37d57522-4fdd-dcff-e81d-6d2ef2cb976f",
                 "rank": "normal",
                 "qualifiers": {
-                    "P31": [
+                    "P42": [
                         {
                             "snaktype": "value",
-                            "property": "P31",
-                            "datatype": "time",
+                            "property": "P42",
+                            "datatype": "quantity",
                             "datavalue": {
                                 "value": {
-                                    "time": "+1933-00-00T00:00:00Z",
-                                    "timezone": 0,
-                                    "before": 0,
-                                    "after": 0,
-                                    "precision": 9,
-                                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                                    "amount": "+587",
+                                    "unit": "http://147.231.55.155/entity/Q36"
                                 },
-                                "type": "time"
+                                "type": "quantity"
                             }
                         }
                     ],
-                    "P32": [
+                    "P43": [
                         {
                             "snaktype": "value",
-                            "property": "P32",
-                            "datatype": "time",
+                            "property": "P43",
+                            "datatype": "quantity",
                             "datavalue": {
                                 "value": {
-                                    "time": "+1934-00-00T00:00:00Z",
-                                    "timezone": 0,
-                                    "before": 0,
-                                    "after": 0,
-                                    "precision": 9,
-                                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                                    "amount": "+403",
+                                    "unit": "http://147.231.55.155/entity/Q36"
                                 },
-                                "type": "time"
+                                "type": "quantity"
+                            }
+                        }
+                    ],
+                    "P44": [
+                        {
+                            "snaktype": "value",
+                            "property": "P44",
+                            "datatype": "quantity",
+                            "datavalue": {
+                                "value": {
+                                    "amount": "+6167",
+                                    "unit": "http://147.231.55.155/entity/Q36"
+                                },
+                                "type": "quantity"
+                            }
+                        }
+                    ],
+                    "P45": [
+                        {
+                            "snaktype": "value",
+                            "property": "P45",
+                            "datatype": "quantity",
+                            "datavalue": {
+                                "value": {
+                                    "amount": "+7247",
+                                    "unit": "http://147.231.55.155/entity/Q36"
+                                },
+                                "type": "quantity"
                             }
                         }
                     ]
                 },
                 "qualifiers-order": [
-                    "P31",
-                    "P32"
+                    "P42",
+                    "P43",
+                    "P44",
+                    "P45"
                 ]
             }
         ],
-        "P9": [
+        "P40": [
             {
                 "mainsnak": {
                     "snaktype": "value",
-                    "property": "P9",
-                    "datatype": "time",
+                    "property": "P40",
+                    "datatype": "quantity",
                     "datavalue": {
                         "value": {
-                            "time": "+1933-00-00T00:00:00Z",
-                            "timezone": 0,
-                            "before": 0,
-                            "after": 0,
-                            "precision": 9,
-                            "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                            "amount": "+5580",
+                            "unit": "http://147.231.55.155/entity/Q36"
                         },
-                        "type": "time"
+                        "type": "quantity"
                     }
                 },
                 "type": "statement",
-                "id": "Q28$5950c041-4039-83ff-de49-e9ab92fd64f7",
+                "id": "Q34$adffda27-4565-a7ac-5325-0ba856f1a1fa",
                 "rank": "normal"
             }
         ],
-        "P19": [
+        "P41": [
             {
                 "mainsnak": {
                     "snaktype": "value",
-                    "property": "P19",
-                    "datatype": "time",
+                    "property": "P41",
+                    "datatype": "quantity",
                     "datavalue": {
                         "value": {
-                            "time": "+1934-00-00T00:00:00Z",
-                            "timezone": 0,
-                            "before": 0,
-                            "after": 0,
-                            "precision": 9,
-                            "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                            "amount": "+6844",
+                            "unit": "http://147.231.55.155/entity/Q36"
                         },
-                        "type": "time"
+                        "type": "quantity"
                     }
                 },
                 "type": "statement",
-                "id": "Q28$23ea58be-47f0-3637-054a-164e3efec058",
+                "id": "Q34$390543d7-4083-4c29-110b-d9e3c2957155",
                 "rank": "normal"
             }
         ]
     },
-    "id": "Q28"
+    "id": "Q34"
 }

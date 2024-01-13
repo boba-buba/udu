@@ -7,21 +7,21 @@ import query_handler
 
 class Volume:
 
-    volume_properties = {"volume" : "P27", "title" : "P22"}
+    volume_properties = {"volume" : "P27", "title" : "P22", "volume_number" : "P51"}
     qid = "Q10"
     volume_numeric_id = 10
     volume_qid = -1
     volume_title = ""
 
-    def volume_in_db(self, title):
-        self.volume_qid = query_handler.query_db(title, "volume")
+    def volume_in_db(self):
+        self.volume_qid = query_handler.query_db(self.volume_title, "volume")
         return self.volume_qid
 
 
     def volume_insert_new(self, data, lang):
-        #data = {vol_number : ..., magazine : ... , magazine_numeric_id: ..., start: .., end: ..., precision: ...} date in what foramt
+        #data = {vol_number : ..., magazine_numeric_id: ..., start: .., end: ..., precision: ...} date in what foramt
         item = wbi.item.new()
-        label = data['magazine'] + ", Vol. " + data["vol_number"]
+        label = self.volume_title
         item.labels.set(language='en', value=label)
 
         #instance of
@@ -46,7 +46,7 @@ class Volume:
             datatype="string",
             datavalue={
                 "value": data["vol_number"],
-                "type": "string"
+                "type" : "string"
             }
         )
         volume_claim=handler.Claim()

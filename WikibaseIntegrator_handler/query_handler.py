@@ -35,16 +35,3 @@ def execute_query(query_to_exec):
         return entity_id
     else:
         return -1
-
-
-"""
-mag = "Volné směry"
-print(query_db(mag, "magazine"))
-print(query_db(mag + ", Vol. XXXVII", "volume"))
-print(query_db(mag+", ročník XXXVII, číslo 1", "issue"))
-print(query_db("Independent directions, vol. XXXVII, issue 1", "issue"))
-print(query_db("mag", "magazine"))
-print(query_db(mag, "issue"))
-print(query_db(mag, "page"))#"""
-
-#print(query_db("Czech", "lang"))

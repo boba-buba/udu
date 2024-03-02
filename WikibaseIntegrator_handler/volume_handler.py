@@ -17,6 +17,8 @@ class Volume:
         self.volume_qid = query_handler.query_db(self.volume_title, "volume")
         return self.volume_qid
 
+    def volume_general_query(self, query):
+        return query_handler.execute_general_query(query)
 
     def volume_insert_new(self, data, lang):
         #data = {vol_number : ..., magazine_numeric_id: ..., start: .., end: ..., precision: ...} date in what foramt
@@ -87,8 +89,8 @@ class Volume:
 
         #time
         if "start" in data:
-            inception_snack = handler.Snak(
-                property_number=general_properties["inception"],
+            start_time_snack = handler.Snak(
+                property_number=general_properties["start_time"],
                 datatype="time",
                 datavalue={
                     "value": {
@@ -102,13 +104,13 @@ class Volume:
                     "type": "time"
                 }
             )
-            inception_claim = handler.Claim()
-            inception_claim.mainsnak = inception_snack
-            item.add_claims(inception_claim)
+            start_time_claim = handler.Claim()
+            start_time_claim.mainsnak = start_time_snack
+            item.add_claims(start_time_claim)
 
         if "end" in data:
-            dissolved_snack = handler.Snak(
-                property_number=general_properties["dissolved"],
+            end_time_snack = handler.Snak(
+                property_number=general_properties["end_time"],
                 datatype="time",
                 datavalue={
                     "value": {
@@ -122,19 +124,59 @@ class Volume:
                     "type": "time"
                 }
             )
-            dissolved_claim = handler.Claim()
-            dissolved_claim.mainsnak = dissolved_snack
-            item.add_claims(dissolved_snack)
-
+            end_time_claim = handler.Claim()
+            end_time_claim.mainsnak = end_time_snack
+            item.add_claims(end_time_claim)
 
         itemEnt = item.write(login=login_instance)
-    """
-    def volume_handle(self, data): #data magazine title, volume number
-        magazine_name = data['name']
-        magazine_id = self.magazine_in_db(magazine_name=magazine_name)
-        if magazine_id == -1:
-            lang = data['lang']
-            self.magazine_insert_new(data, lang)
-        else:
-            if len(data) > 2: #miminum name and lang
-                self.magazine_update(data)"""
+
+    def volume_update_date(self, new_values):
+        # implementation
+        item = wbi.item.get(self.volume_qid)
+
+        if "start" in new_values:
+            item.claims.remove(general_properties["start_time"])
+
+            start_time_snack = handler.Snak(
+                property_number=general_properties["start_time"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": new_values["start"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": new_values["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+
+            start_time_claim = handler.Claim()
+            start_time_claim.mainsnak = start_time_snack
+            item.add_claims(start_time_claim)
+
+        if "end" in new_values:
+            item.claims.remove(general_properties["end_time"])
+
+            end_time_snack = handler.Snak(
+                property_number=general_properties["end_time"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": new_values["end"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": new_values["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            end_time_claim = handler.Claim()
+            end_time_claim.mainsnak = end_time_snack
+            item.add_claims(end_time_claim)
+
+        item.write(login=login_instance)

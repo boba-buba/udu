@@ -51,5 +51,5 @@ def parse_csv(file_name):
         f.flush()
 
 
-#parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\1901_Deutsche_Kunst_und_Dekoration_data.csv", 'de')
-parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXX_data.csv")
+#parse_csv(r"C:\Users\ncoro\Downloads\1927.10__red_i__1_data.csv")
+#parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXX_data.csv")

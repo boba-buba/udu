@@ -146,7 +146,7 @@ class Page:
 
     def page_update(self, data):
         self.qid = self.page_in_db(data["title"], "page")
-    
+
 
 
 

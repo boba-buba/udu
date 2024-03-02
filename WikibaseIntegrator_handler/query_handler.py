@@ -35,3 +35,8 @@ def execute_query(query_to_exec):
         return entity_id
     else:
         return -1
+
+def execute_general_query(query_to_exec):
+    result = wbi_helpers.execute_sparql_query(query=query_to_exec, endpoint="http://147.231.55.155:8834/proxy/wdqs/bigdata/namespace/wdq/sparql", max_retries=1)
+    bindings = result['results']['bindings']
+    return bindings

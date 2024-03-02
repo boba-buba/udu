@@ -102,6 +102,47 @@ class Issue:
         lang_claim = handler.Claim()
         lang_claim.mainsnak = lang_snak
 
+        #time
+        if "start" in data:
+            start_time_snack = handler.Snak(
+                property_number=general_properties["start_time"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": data["start"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": data["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            start_time_claim = handler.Claim()
+            start_time_claim.mainsnak = start_time_snack
+            item.add_claims(start_time_claim)
+
+        if "end" in data:
+            end_time_snack = handler.Snak(
+                property_number=general_properties["end_time"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": data["end"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": data["precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            end_time_claim = handler.Claim()
+            end_time_claim.mainsnak = end_time_snack
+            item.add_claims(end_time_claim)
+
         item.add_claims([instance_claim, issue_claim, part_of_claim, title_claim, lang_claim])
         itemEnt = item.write(login=login_instance)
 

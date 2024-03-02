@@ -70,17 +70,3 @@ class Magazine:
 
     def magazine_update(self, data):
         magazine_item = handler.get_item()
-    """
-    def magazine_handle(self, data, request):
-        magazine_name = data['name']
-        magazine_id = self.magazine_in_db(magazine_name=magazine_name)
-        if magazine_id == -1:
-            lang = data['lang']
-            self.magazine_insert_new(data, lang)
-        else:
-            if len(data) > 2: #miminum name and lang
-                self.magazine_update(data)
-    """
-
-
-

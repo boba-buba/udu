@@ -87,4 +87,4 @@ class Caption:
         repro_claim.mainsnak = repro_snak
 
         item.add_claims([instance_claim, text_claim, on_page_claim, repro_claim])
-        itemEnt = item.write(login=login_instance)
+        item.write(login=login_instance)

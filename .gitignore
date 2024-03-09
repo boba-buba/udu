@@ -9,3 +9,7 @@ apicache-py3
 dist/
 build/
 *.spec
+csv_parser/db_config.py
+wikibase_try.py
+WikibaseIntegrator_handler/query_handler.py
+WikibaseIntegrator_handler/handler.py

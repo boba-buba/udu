@@ -1,5 +1,4 @@
 import sys
-#sys.path.insert(0, r'C:\Users\ncoro\udu\WikibaseIntegrator_handler')
 import magazine_handler
 import volume_handler
 import issue_handler

@@ -48,7 +48,7 @@ country_mapping = {
     'Portugalsko': 'Portugal',
     'Monako': 'Monaco',
     'Řecko': 'Greece',
-    'Vietnam': 'Viet Nam',
+    'Vietnam': 'Vietnam',
     'Dominika': 'Dominica',
     'Gruzie': 'Georgia',
     'Nový Zéland': 'New Zealand',

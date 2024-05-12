@@ -4,24 +4,24 @@ from handler import login_instance
 from handler import wbi
 import handler
 from handler import general_properties
-file_name = r"C:\Users\ncoro\Downloads\research_artists.csv"
-output_file = r"ethicities.txt"
-ethnicities = []
-with open(file_name, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter=';')
+file_name = r"C:\Users\ncoro\Downloads\research_artists_latest.csv"
+#output_file = r"ethicities.txt"
+# ethnicities = []
+# with open(file_name, 'r', encoding="utf-8") as f:
+#         reader = csv.DictReader(f, delimiter=';')
 
 
-        for row in reader:
-            eth = row["Narodnost"]
-            if eth not in ethnicities:
-                  ethnicities.append(eth)
-        f.flush()
+#         for row in reader:
+#             eth = row["Narodnost"]
+#             if eth not in ethnicities:
+#                   ethnicities.append(eth)
+#         f.flush()
 
-out = open(output_file, "a",  encoding="utf-8")
-for eth in ethnicities:
-      out.write(eth)
-      out.write("\n")
-out.close()
+# out = open(output_file, "a",  encoding="utf-8")
+# for eth in ethnicities:
+#       out.write(eth)
+#       out.write("\n")
+# out.close()
 
 # description = "Ethnic group"
 
@@ -57,27 +57,27 @@ out.close()
 #     f.flush()
 
 ## Countries
-countries = []
-count_file = r"countries.txt"
-with open(file_name, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter=';')
+# countries = []
+# count_file = r"countries.txt"
+# with open(file_name, 'r', encoding="utf-8") as f:
+#         reader = csv.DictReader(f, delimiter=';')
 
 
-        for row in reader:
-            c = row["StatNarozeni"]
-            if c not in countries:
-                  countries.append(c)
-            c2 = row["StatUmrti"]
-            if c2 not in countries:
-                  countries.append(c2)
-        f.flush()
+#         for row in reader:
+#             c = row["StatNarozeni"]
+#             if c not in countries:
+#                   countries.append(c)
+#             c2 = row["StatUmrti"]
+#             if c2 not in countries:
+#                   countries.append(c2)
+#         f.flush()
 
 
-out = open(count_file, "a",  encoding="utf-8")
-for c in countries:
-      out.write(c)
-      out.write("\n")
-out.close()
+# out = open(count_file, "a",  encoding="utf-8")
+# for c in countries:
+#       out.write(c)
+#       out.write("\n")
+# out.close()
 
 # def create_ethnic_group(name):
 #     item = wbi.item.new()
@@ -130,5 +130,15 @@ out.close()
 #       out.write("\n")
 # out.close()
 
+output_file = r"out_idents.txt"
 
+with open(file_name, 'r', encoding="utf-8") as f:
+      reader = csv.DictReader(f, delimiter=';')
+      out = open(output_file, "a",  encoding="utf-8")
+
+      for row in reader:
+            pseuds = row["Identifikace"]
+            if len(pseuds) > 0:
+                  out.write(pseuds)
+                  out.write("\n")
 

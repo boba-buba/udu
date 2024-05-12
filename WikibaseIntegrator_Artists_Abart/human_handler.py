@@ -8,7 +8,7 @@ import query_handler
 necessary_properties = {'given_name' : 'P61', 'family_name' : 'P60', 'sec_fam_name' : 'P62', 'pseudonym' : 'P58' ,
                         'birth_date' : 'P2', 'birth_place' : 'P64', 'death_date' : 'P3', 'death_place' : 'P65',
                         'ident' : 'P63', 'birth_country' : 'P66', 'death_country' : 'P67', 'ethnic_gr' : 'P55',
-                        'sex' : 'P8', 'abart_id' : 'P59', 'nkaut' : 'P56', 'wikidata' : 'P4', 'viaf' : 'P57'}
+                        'sex' : 'P8', 'abart_id' : 'P59', 'nkaut' : 'P56', 'wikidata' : 'P4', 'viaf' : 'P57', "instance" : "P1"}
 necessary_items = {'human' : 'Q4', 'male' : 'Q5', 'female' : 'Q6', 'other' : 'Q769'}
 
 class Human:
@@ -22,6 +22,22 @@ class Human:
         item.labels.set(language='en', value=label)
         if "aliases" in data:
             item.aliases.set(language='en', values=data['aliases'])
+
+        instance_snak = handler.Snak(
+            property_number=necessary_properties["instance"],
+                datatype="wikibase-item",
+                datavalue={
+                    "value": {
+                        "entity-type": "item",
+                        "numeric-id": int(necessary_items["human"][1:]),
+                        "id": necessary_items["human"]
+                    },
+                    "type": "wikibase-entityid"
+                }
+            )
+        instance_claim = handler.Claim()
+        instance_claim.mainsnak = instance_snak
+        item.claims.add(instance_claim)
 
         if "name" in data:
             given_name_snak = handler.Snak(
@@ -235,6 +251,19 @@ class Human:
             sex_claim = handler.Claim()
             sex_claim.mainsnak = sex_snak
             item.claims.add(sex_claim)
+
+        if "identification" in data:
+            ident_snak = handler.Snak(
+                property_number=necessary_properties['ident'],
+                datatype='string',
+                datavalue={
+                    "value": data["identification"],
+                    "type" : "string"
+                }
+            )
+            ident_claim = handler.Claim()
+            ident_claim.mainsnak = ident_snak
+            item.claims.add(ident_claim)
 
         abart_snak = handler.Snak(
             property_number=necessary_properties["abart_id"],

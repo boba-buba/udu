@@ -130,15 +130,47 @@ file_name = r"C:\Users\ncoro\Downloads\research_artists_latest.csv"
 #       out.write("\n")
 # out.close()
 
-output_file = r"out_idents.txt"
+# output_file = r"out_idents.txt"
 
-with open(file_name, 'r', encoding="utf-8") as f:
-      reader = csv.DictReader(f, delimiter=';')
-      out = open(output_file, "a",  encoding="utf-8")
+# with open(file_name, 'r', encoding="utf-8") as f:
+#       reader = csv.DictReader(f, delimiter=';')
+#       out = open(output_file, "a",  encoding="utf-8")
 
-      for row in reader:
-            pseuds = row["Identifikace"]
-            if len(pseuds) > 0:
-                  out.write(pseuds)
-                  out.write("\n")
+#       for row in reader:
+#             pseuds = row["Identifikace"]
+#             if len(pseuds) > 0:
+#                   out.write(pseuds)
+#                   out.write("\n")
 
+
+read_abart_file = r"C:\Users\ncoro\Downloads\research_artists.csv"
+read_query_file = r"C:\Users\ncoro\Downloads\query.csv"
+
+output_abart = r"C:\Users\ncoro\source\repos\udu\abart.txt"
+output_query = r"C:\Users\ncoro\source\repos\udu\query.txt"
+
+# with open(read_query_file, 'r', encoding="utf-8") as f:
+#     reader = csv.DictReader(f, delimiter=',')
+#     out = open(output_query, "a", encoding="utf-8")
+
+#     for row in reader:
+#       id = row['abartID']
+#       out.write(id)
+#       out.write("\n")
+
+not_inserted_ids = r"lost_ids.txt"
+
+
+
+filenames = [output_abart, output_query]
+
+def gen_line(filename):
+    with open(filename) as f:
+        for line in f:
+            yield line.strip()
+
+gens = [gen_line(n) for n in filenames]
+
+for file1_line, file2_line in zip(*gens):
+    if (file1_line != file2_line):
+        print("\t".join([file1_line, file2_line]))

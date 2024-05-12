@@ -6,7 +6,8 @@ import handler
 from handler import general_properties
 import mapping
 import human_handler as hh
-file_name = r"C:\Users\ncoro\Downloads\research_artists_latest.csv"
+from query_handler import find_human_by_abartid
+file_name = r"C:\Users\ncoro\Downloads\research_artists.csv"
 #file_name = r"C:\Users\ncoro\source\repos\udu\WikibaseIntegrator_Artists_Abart\research_artists_trying.csv"
 #file_name = r"C:\Users\ncoro\source\repos\udu\WikibaseIntegrator_Artists_Abart\dummy_ex.csv"
 #IdOsoby;Prijmeni;Jmeno;DalsiPrijmeni;DruheJmeno;Pseudonymy;Sifry;DatumNarozeniDen;DatumNarozeniMesic;DatumNarozeniRok;ObecNarozeni;StatNarozeni;DatumUmrtiDen;DatumUmrtiMesic;DatumUmrtiRok;ObecUmrti;StatUmrti;Identifikace;Narodnost;Pohlavi;NKAUT;WIKIDATA;VIAF
@@ -153,7 +154,7 @@ def parse_row(row):
 with open(file_name, 'r', encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter=';')
         for row in reader:
-           human_data = parse_row(row)
+            if (find_human_by_abartid(row["\ufeffIdOsoby"]) == False):
+                human_data = parse_row(row)
 
         f.flush()
-#19354

@@ -13,11 +13,13 @@ class Page:
     page_qid = -1
     page_title = ""
 
-    def page_in_db(self):
+    def page_in_db(self) -> int: #TODO see if always int
+        """Check if the page with such title is already in db and return its QID, -1 if not in db."""
         self.page_qid = query_handler.query_db(self.page_title, "page")
         return self.page_qid
-    #data = page_title, page_number, page_index, num_of_repro, has_text, iss_vol_numeric_id, width_page, height_page
-    def page_insert_new(self, data, lang):
+
+    def page_insert_new(self, data: dict[str, str], lang: str):
+        """ Create Wikibase properties for all non-empty fields and insert the item to the database. """
         item = wbi.item.new()
         label = data["page_title"]
         item.labels.set(language='en', value=label)
@@ -40,16 +42,17 @@ class Page:
         instance_claim.mainsnak = instance_snak
 
         #page number
-        page_number_snak = handler.Snak(
-            property_number=self.page_properties["page_number"],
-            datatype="string",
-            datavalue={
-                "value": data["page_number"],
-                "type": "string"
-            }
-        )
-        page_number_claim=handler.Claim()
-        page_number_claim.mainsnak = page_number_snak
+        if data["page_number"] != "":
+            page_number_snak = handler.Snak(
+                property_number=self.page_properties["page_number"],
+                datatype="string",
+                datavalue={
+                    "value": data["page_number"],
+                    "type": "string"
+                }
+            )
+            page_number_claim=handler.Claim()
+            page_number_claim.mainsnak = page_number_snak
 
         #page index
         if data["page_index"] != "":
@@ -140,14 +143,79 @@ class Page:
         has_text_claim = handler.Claim()
         has_text_claim.mainsnak = has_text_snak
 
+        #img_address
+        if data["img_address"] != "":
+            img_addr_snak = handler.Snak(
+                property_number = general_properties["img_address"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["img_address"],
+                        "language" : "en"
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            img_addr_claim = handler.Claim()
+            img_addr_claim.mainsnak = img_addr_snak
+            item.add_claims([img_addr_claim])
+
+        #author
+        if data["author"] != "":
+            author_snak = handler.Snak(
+                property_number=general_properties["author"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["author"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            author_claim = handler.Claim()
+            author_claim.mainsnak = author_snak
+            item.add_claims([author_claim])
+
+        #publisher name
+        if data["publisher"] != "":
+            publisher_snak = handler.Snak(
+                property_number=general_properties["publisher_name"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["publisher"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            publisher_claim = handler.Claim()
+            publisher_claim.mainsnak = publisher_snak
+            item.add_claims([publisher_claim])
+
+        #contributor
+        if data["contributor"] != "":
+            contributor_snak = handler.Snak(
+                property_number=general_properties["contributor"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["contributor"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            contributor_claim = handler.Claim()
+            contributor_claim.mainsnak = contributor_snak
+            item.add_claims([contributor_claim])
+
 
         item.add_claims([instance_claim, page_number_claim, part_of_claim, num_of_repro_claim, has_text_claim, width_claim, height_claim])
         itemEnt = item.write(login=login_instance)
 
-    def page_update(self, data):
+
+    def page_update(self, data: dict[str, str]):
+        """Nothing important for now."""
         self.qid = self.page_in_db(data["title"], "page")
-
-
-
-
-

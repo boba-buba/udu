@@ -1,7 +1,7 @@
 #import db_conn
 import os
 #import sys
-from entry import parse_csv
+from entry import parse_data
 
 def is_csv(file_name):
     if file_name.endswith('.csv'):
@@ -11,7 +11,9 @@ def is_csv(file_name):
 
 
 def work_with_csv(input_path, output_path = ""):
-    parse_csv(input_path)
+    #TODO create path for data/pages
+    #parse_data(input_path_pages, input_path_repros)
+    print()
 
 
 def work_with_folder(dir_name):

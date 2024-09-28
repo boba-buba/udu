@@ -27,7 +27,7 @@ repro = reproduction_handler.Repro()
 caption = caption_handler.Caption()
 
 
-def parse_date(data: list[str]) -> dict[str]:
+def parse_date(data: list[str]) -> dict[str, str]:
     """
     Parse date and create format for Wikibase
     """
@@ -39,7 +39,9 @@ def parse_date(data: list[str]) -> dict[str]:
         dates_dict["end"] = f"+{data[3]}-{data[4]}-{data[5]}T00:00:00Z"
     return dates_dict
 
-def compare_and_change_date(date):
+
+def compare_and_change_date(date: dict[str, str]):
+    """Compare publication date of the volume with the date from the db and if the start date is earlier or end date is later then change it in db."""
     # getting here start and end date
     qid = str(volume.volume_qid)
     q='SELECT ?start ?end WHERE { wd:' + qid + ' wdt:P31 ?start. wd:' + qid +' wdt:P32 ?end. SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}'
@@ -69,7 +71,9 @@ def compare_and_change_date(date):
     if len(new_info) > 1:
         volume.volume_update_date(new_info)
 
+
 def process_first_row(row: dict[str, str]):
+    """Process data from the first row of the csv and based on data add magazine, volume and issue"""
     #insert magazine
     magazine.magazine_name = row["journal_name"]
     if (magazine.magazine_in_db() == -1):
@@ -79,15 +83,16 @@ def process_first_row(row: dict[str, str]):
         print(f"Magazine already in db")
 
     #insert volume
-    if row["volume"] == "": #fixme to empty value
-        volume.volume_title = magazine.magazine_name + ", vol. None"
-    else:
-        volume.volume_title = magazine.magazine_name + ", vol. " + row["volume"]
+    volume_id = row["volume"]
+    if volume_id == "":
+        volume_id = "None"
+
+    volume.volume_title = magazine.magazine_name + ", vol. " + volume_id
 
     result = row['publication_date'].split("-") #check for 2 elements
     volume_data = {}
 
-    volume_data["vol_number"] = row["volume"]
+    volume_data["vol_number"] = volume_id
     volume_data["title"] = volume.volume_title
     while  magazine.magazine_in_db() == -1:
         time.sleep(2.5)
@@ -117,12 +122,14 @@ def process_first_row(row: dict[str, str]):
         volume.volume_in_db()
     issue_data["volume_numeric_id"] = int(volume.volume_qid[1:])
     issue_data["lang"] = row["language"]
-
+    issue_data.update({"author": row["author"], "publisher": row["publisher"],
+                     "contributor": row["contributor"]})
 
     if issue.issue_in_db() == -1:
         issue.issue_insert_new(issue_data, issue_data["lang"])
     else:
         print(f"Issue already in db")
+
 
 #journal_name;issue;volume;publication_date;page_number;page_index;page_width;page_height;language;img_address;author;publisher;contributor
 def insert_page_row(row: dict[str, str], page_num_of_repro: str, page_id: str):
@@ -134,36 +141,37 @@ def insert_page_row(row: dict[str, str], page_num_of_repro: str, page_id: str):
     iss_vol_numeric_id = issue.issue_in_db()
     while (iss_vol_numeric_id == -1):
         iss_vol_numeric_id = issue.issue_in_db()
-    page_title = issue.issue_title + ", p. " + row[page_id]
+    page_title = issue.issue_title + ", p. " + page_id
 
 
     # page insert     data = page_title, page_number, page_index, num_of_repro, has_text, iss_vol_numeric_id, page_width, page_height
-    p_text = 0 # zda u tech captions vsechno bude v poradku
-    if (len(row["caption"]) > 0): p_text = 1
 
-    if (row[page_id] in page_num_of_repro):
-        page.page_title = page_title
-        if page.page_in_db() == -1:
-            page_data = {"page_title": page_title, "page_number" : row["page_number"], "page_index" : row["page_index"], 
-                        "num_of_repro" : page_num_of_repro[row["page_number"]], "has_text" : p_text, "iss_vol_numeric_id" : int(iss_vol_numeric_id[1:]),
-                        "height_page" : row["page_height"], "width_page" : row["page_width"], "img_address": row["img_address"], "author": row["author"],
-                        "publisher": row["publisher"], "contributor": row["contributor"]}
 
-            page.page_insert_new(page_data, row["language"])
-            page.page_in_db()
-        else:
-            print("page already in db")
-        del page_num_of_repro[row[page_id]]
+    page.page_title = page_title
+    if page.page_in_db() == -1:
+        page_data = {"page_title": page_title, "page_number" : row["page_number"], "page_index" : row["page_index"], 
+                    "num_of_repro" : page_num_of_repro, "iss_vol_numeric_id" : int(iss_vol_numeric_id[1:]),
+                    "height_page" : row["page_height"], "width_page" : row["page_width"], "img_address": row["img_address"]}
+
+        page.page_insert_new(page_data, row["language"])
+        page.page_in_db()
+    else:
+        print("page already in db")
+
+    #del page_num_of_repro[row[page_id]]
 
 
 
-
-def parse_reproductions(row):
-    # repro insert data = { repro_title, area, on_page, x1, y1, x2, y2, width, height }
+#journal_name;issue;volume;publication_date;page_number;page_index;image_number;caption;area_in_percentage;x1;y1;x2;y2;image;width_page;height_page;language;.img_address;author;publisher;contributor
+def parse_reproductions(row: dict[str, str]):
+    """ Parse one row and insert reproduction into the db, if it is not there already """
     width = abs(int(row['x1']) - int(row['x2']))
     height = abs(int(row['y1']) - int(row['y2']))
 
-    page.page_title = issue.issue_title + ", p. " + row["page_number"]
+    page_id = row["page_number"]
+    if page_id == "":
+        page_id = row["page_index"]
+    page.page_title = issue.issue_title + ", p. " + page_id
     page_qid = page.page_in_db()
     while (page_qid == -1):
         time.sleep(2.5)
@@ -172,18 +180,21 @@ def parse_reproductions(row):
     repro.repro_title = page.page_title + ", repro " + row["image_number"]
     if repro.repro_in_db() == -1:
 
-        repro_data = {"repro_title" :  repro.repro_title, "area" : row["area in percentage"], "on_page" : int(page_qid[1:]), "x1" : row["x1"], "y1" : row["y1"],
-                     "x2" : row["x2"], "y2": row["y2"], "width" : width, "height" : height}
+        repro_data = {"repro_title" :  repro.repro_title, "area" : row["area_in_percentage"], "on_page" : int(page_qid[1:]), "x1" : row["x1"], "y1" : row["y1"],
+                     "x2" : row["x2"], "y2": row["y2"], "width" : width, "height" : height, "img_address": row["img_address"]}
         repro.repro_insert_new(repro_data, row["language"])
         repro.repro_in_db()
     else: print("repro already in DB")
 
 
-def parse_captions(row):
+def parse_captions(row: dict[str, str]):
+    """ Parse reproduction row and if there the caption is not empty insert the new caption into the db (if not already in db). """
     # caption insert #data = { caption_title, text, on_page, repro}
     if row["caption"] != "":
-
-        page.page_title = issue.issue_title + ", p. " + row["page_number"]
+        page_id = row["page_number"]
+        if page_id == "":
+            page_id = row["page_index"]
+        page.page_title = issue.issue_title + ", p. " + page_id
         page_qid = page.page_in_db()
         while (page_qid == -1):
             time.sleep(2.5)

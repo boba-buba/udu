@@ -7,7 +7,7 @@ import query_handler
 
 class Repro:
 
-    repro_properties = {"area" : "P46", "on_page" : "P47", "page_placement" : "P48", "x1": "P42", "y1" : "P43", "x2" : "P44", "y2": "P45", "width": "P40", "height" : "P41" }
+    repro_properties = {"area" : "P46", "on_page" : "P47", "page_placement" : "P48", "x1": "P42", "y1" : "P43", "x2" : "P44", "y2": "P45", "width": "P40", "height" : "P41", "img_addr": "P69" }
     qid = "Q33"
     repro_numeric_id = 33
     repro_qid = -1
@@ -100,7 +100,6 @@ class Repro:
         height_claim = handler.Claim()
         height_claim.mainsnak = height_snak
 
-        #TODO page placement
         #page_placement
         page_placement_snak = handler.Snak(
             property_number=self.repro_properties["page_placement"],
@@ -174,6 +173,23 @@ class Repro:
         qualifier.add(y1_claim)
         qualifier.add(x2_claim)
         qualifier.add(y2_claim)
+
+        #img_address
+        if data["img_address"] != "":
+            img_addr_snak = handler.Snak(
+                property_number=self.repro_properties["img_addr"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["img_address"],
+                        "language" : "en"
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            img_addr_claim = handler.Claim()
+            img_addr_claim.mainsnak = img_addr_snak
+            item.add_claims([img_addr_claim])
 
         page_placement_claim.qualifiers = [x1_claim, y1_claim, x2_claim, y2_claim]
 

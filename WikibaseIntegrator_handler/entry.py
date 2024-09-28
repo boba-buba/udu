@@ -6,6 +6,7 @@ from data_handler import insert_page_row, parse_reproductions, parse_captions
 #number of pages
 
 def count_number_of_images_per_page(file_name: str) -> dict[str, str]:
+    """ Count number of reproductions on the pages. """
     pages = {}
     try:
         with open(file_name, 'r', encoding="utf-8") as f:
@@ -24,28 +25,29 @@ def count_number_of_images_per_page(file_name: str) -> dict[str, str]:
 
 
 def parse_data(pages_csv_file_name: str, repros_csv_file_name: str):
+    """ Parse pair of csv files: with pages and with reproductions. """
     number_images_per_page = count_number_of_images_per_page(repros_csv_file_name)
 
     # magazine, volume, issue must be inserted here
-    # all pages from pages file inserted here
     with open(pages_csv_file_name, 'r', encoding="utf-8") as pages_file:
         reader = csv.DictReader(pages_file, delimiter=';')
 
         first_row = next(reader)
         process_first_row(first_row)
 
+        # all pages from pages file inserted here
         process_page_row(first_row, number_images_per_page)
         for row in reader:
             process_page_row(row, number_images_per_page)
         pages_file.flush()
 
-    #insert roproduvtions and captions
-    process_repro_rows(pages_csv_file_name)
+    process_repro_rows(repros_csv_file_name)
 
 
 
 #journal_name;issue;volume;publication_date;page_number;page_index;page_width;page_height;language;img_address;author;publisher;contributor
 def process_page_row(page_row: dict[str, str], images_per_pages: dict[str, str]):
+    """ Parses pages csv and inserts new pages into the database. """
     # by default number, if number is null then index
     page_id = page_row["page_number"]
     if page_id == "":
@@ -54,12 +56,14 @@ def process_page_row(page_row: dict[str, str], images_per_pages: dict[str, str])
     # find repros per page, by default is 0 if page doesnt have any repros
     repros_per_page = "0"
     if page_id in images_per_pages.keys():
-        repros_per_page = images_per_pages[repros_per_page]
+        repros_per_page = images_per_pages[page_id]
 
     insert_page_row(page_row, repros_per_page, page_id)
+    #del repros_per_page
 
 
 def process_repro_rows(repros_csv_file_name: str):
+    """ Parse reproductions csv file and insert reproductions and captions object to the db. """
     with open(repros_csv_file_name, 'r', encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter=';')
 

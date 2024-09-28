@@ -64,7 +64,24 @@ class Magazine:
         title_claim = handler.Claim()
         title_claim.mainsnak = title_snack
 
-        item.add_claims([instance_claim, title_claim])
+        #country
+        id = query_handler.execute_query('SELECT ?item WHERE { ?item wdt:P1 wd:Q18. ?item ?label "' + lang + '"@en .}')
+        country_snak = handler.Snak(
+            property_number=general_properties["country"],
+            datatype="wikibase-item",
+            datavalue={
+                "value": {
+                    "entity-type": "item",
+                    "numeric-id": int(id[1:]),
+                    "id": id
+                },
+                "type": "wikibase-entityid"
+            }
+        )
+        country_claim = handler.Claim()
+        country_claim.mainsnak = country_snak
+
+        item.add_claims([instance_claim, title_claim, country_claim])
 
         itemEnt = item.write(login=login_instance)
 

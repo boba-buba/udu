@@ -17,7 +17,7 @@ class Issue:
         self.issue_qid = query_handler.query_db(self.issue_title, "issue")
         return self.issue_qid
 
-    def issue_insert_new(self, data, lang):
+    def issue_insert_new(self, data: dict[str, str], lang: str):
         # minimal format of the data {'label': 'smth', (opt)'label_cs' : 'smth', 'description' : 'smth'}
 
         item = wbi.item.new()
@@ -142,6 +142,57 @@ class Issue:
             end_time_claim = handler.Claim()
             end_time_claim.mainsnak = end_time_snack
             item.add_claims(end_time_claim)
+
+        #author
+        if data["author"] != "":
+            author_snak = handler.Snak(
+                property_number=general_properties["author"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["author"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            author_claim = handler.Claim()
+            author_claim.mainsnak = author_snak
+            item.add_claims([author_claim])
+
+        #publisher name
+        if data["publisher"] != "":
+            publisher_snak = handler.Snak(
+                property_number=general_properties["publisher_name"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["publisher"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            publisher_claim = handler.Claim()
+            publisher_claim.mainsnak = publisher_snak
+            item.add_claims([publisher_claim])
+
+        #contributor
+        if data["contributor"] != "":
+            contributor_snak = handler.Snak(
+                property_number=general_properties["contributor"],
+                datatype="monolingualtext",
+                datavalue={
+                    "value": {
+                        "text" : data["contributor"],
+                        "language" : lang
+                    },
+                    "type" : "monolingualtext"
+                }
+            )
+            contributor_claim = handler.Claim()
+            contributor_claim.mainsnak = contributor_snak
+            item.add_claims([contributor_claim])
 
         item.add_claims([instance_claim, issue_claim, part_of_claim, title_claim, lang_claim])
         itemEnt = item.write(login=login_instance)

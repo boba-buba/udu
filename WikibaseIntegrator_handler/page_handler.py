@@ -53,6 +53,7 @@ class Page:
             )
             page_number_claim=handler.Claim()
             page_number_claim.mainsnak = page_number_snak
+            item.add_claims([page_number_claim])
 
         #page index
         if data["page_index"] != "":
@@ -129,19 +130,19 @@ class Page:
         height_claim = handler.Claim()
         height_claim.mainsnak = height_snak
 
-        #has text
-        value = "no"
-        if data["has_text"] == 1: value = "yes"
-        has_text_snak = handler.Snak(
-            property_number=self.page_properties["has_text"],
-            datatype="string",
-            datavalue={
-                "value" : value,
-                "type": "string"
-            }
-        )
-        has_text_claim = handler.Claim()
-        has_text_claim.mainsnak = has_text_snak
+        # #has text
+        # value = "no"
+        # if data["has_text"] == 1: value = "yes"
+        # has_text_snak = handler.Snak(
+        #     property_number=self.page_properties["has_text"],
+        #     datatype="string",
+        #     datavalue={
+        #         "value" : value,
+        #         "type": "string"
+        #     }
+        # )
+        # has_text_claim = handler.Claim()
+        # has_text_claim.mainsnak = has_text_snak
 
         #img_address
         if data["img_address"] != "":
@@ -160,59 +161,7 @@ class Page:
             img_addr_claim.mainsnak = img_addr_snak
             item.add_claims([img_addr_claim])
 
-        #author
-        if data["author"] != "":
-            author_snak = handler.Snak(
-                property_number=general_properties["author"],
-                datatype="monolingualtext",
-                datavalue={
-                    "value": {
-                        "text" : data["author"],
-                        "language" : lang
-                    },
-                    "type" : "monolingualtext"
-                }
-            )
-            author_claim = handler.Claim()
-            author_claim.mainsnak = author_snak
-            item.add_claims([author_claim])
-
-        #publisher name
-        if data["publisher"] != "":
-            publisher_snak = handler.Snak(
-                property_number=general_properties["publisher_name"],
-                datatype="monolingualtext",
-                datavalue={
-                    "value": {
-                        "text" : data["publisher"],
-                        "language" : lang
-                    },
-                    "type" : "monolingualtext"
-                }
-            )
-            publisher_claim = handler.Claim()
-            publisher_claim.mainsnak = publisher_snak
-            item.add_claims([publisher_claim])
-
-        #contributor
-        if data["contributor"] != "":
-            contributor_snak = handler.Snak(
-                property_number=general_properties["contributor"],
-                datatype="monolingualtext",
-                datavalue={
-                    "value": {
-                        "text" : data["contributor"],
-                        "language" : lang
-                    },
-                    "type" : "monolingualtext"
-                }
-            )
-            contributor_claim = handler.Claim()
-            contributor_claim.mainsnak = contributor_snak
-            item.add_claims([contributor_claim])
-
-
-        item.add_claims([instance_claim, page_number_claim, part_of_claim, num_of_repro_claim, has_text_claim, width_claim, height_claim])
+        item.add_claims([instance_claim, part_of_claim, num_of_repro_claim, width_claim, height_claim])
         itemEnt = item.write(login=login_instance)
 
 

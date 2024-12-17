@@ -1,5 +1,6 @@
 import csv
 import pandas as ps
+import os
 from data_handler import process_first_row
 from data_handler import insert_page_row, parse_reproductions, parse_captions
 #journal name,issue,volume,year,page number,page index,image number,caption,area in percentage,x1,y1,x2,y2,image,width_page,height_page,language
@@ -40,8 +41,8 @@ def parse_data(pages_csv_file_name: str, repros_csv_file_name: str):
         for row in reader:
             process_page_row(row, number_images_per_page)
         pages_file.flush()
-
-    process_repro_rows(repros_csv_file_name)
+    if os.path.exists(repros_csv_file_name):
+        process_repro_rows(repros_csv_file_name)
 
 
 
@@ -70,20 +71,24 @@ def process_repro_rows(repros_csv_file_name: str):
         for row in reader:
             parse_reproductions(row)
         f.flush()
+    log_file = repros_csv_file_name + "_log.txt"
+    with open(log_file, 'a', encoding='utf-8') as log_f:
+        with open(repros_csv_file_name, 'r', encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter=';')
 
-    with open(repros_csv_file_name, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter=';')
-
-        for row in reader:
-            parse_captions(row)
-        f.flush()
-
-
-pages = r"C:\Users\ncoro\source\repos\udu\csv_parser\csv_files\Le_Bulletin_de_la_vie_artistique_1921_01_2_pages.csv"
-repros = r"C:\Users\ncoro\source\repos\udu\csv_parser\csv_files\Le_Bulletin_de_la_vie_artistique_1921_01_2_data.csv"
+            for row in reader:
+                parse_captions(row, log_f)
+            f.flush()
+        log_f.flush()
+    if os.path.getsize(log_file) == 0:
+        os.remove(log_file)
 
 
-parse_data(pages, repros)
+# pages = r"C:\Users\ncoro\source\repos\udu\csv_parser\csv_files\Le_Bulletin_de_la_vie_artistique_1921_01_2_pages.csv"
+# repros = r"C:\Users\ncoro\source\repos\udu\csv_parser\csv_files\Le_Bulletin_de_la_vie_artistique_1921_01_2_data.csv"
+
+
+# parse_data(pages, repros)
 
 #parse_csv(r"C:\Users\ncoro\Downloads\1927.10__red_i__1_data.csv")
 #parse_csv(r"C:\Users\ncoro\udu\csv_parser\csv_files\Volne smery_XXX_data.csv")

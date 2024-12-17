@@ -11,7 +11,7 @@ class Window(tk.Frame):
         self.show_widgets()
 
     def show_widgets(self):
-        self.master.title("WikibaseIntegratorDataHandler_v2.0.0")
+        self.master.title("WBIntegrator")
         self.master.geometry("500x500")
         button2 = tk.Button(self, text="Insert new data", command=self.insertion_handler)
         button2.pack(padx=20, pady=30)

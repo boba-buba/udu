@@ -79,8 +79,9 @@ def process_first_row(row: dict[str, str]):
     if (magazine.magazine_in_db() == -1):
         magazine.magazine_insert_new(row["language"])
         magazine.magazine_in_db()
-    else:
-        print(f"Magazine already in db")
+        print("magazine " + magazine.magazine_name + " was inserted.")
+    # else:
+        # print(f"Magazine already in db")
 
     #insert volume
     volume_id = row["volume"]
@@ -102,9 +103,10 @@ def process_first_row(row: dict[str, str]):
         volume_data.update(parse_date(result))
         volume.volume_insert_new(volume_data, row["language"])
         volume.volume_in_db()
+        print("volume " + volume.volume_title + " was inserted.")
     else:
         compare_and_change_date(parse_date(result))
-        print(f"Volume is already in db")
+        # print(f"Volume is already in db")
 
     #insert issue
     issue_data = parse_date(result)
@@ -127,15 +129,16 @@ def process_first_row(row: dict[str, str]):
 
     if issue.issue_in_db() == -1:
         issue.issue_insert_new(issue_data, issue_data["lang"])
-    else:
-        print(f"Issue already in db")
+        print("issue " + issue.issue_title + " was inserted.")
+    # else:
+    #     print(f"Issue already in db")
 
 
 #journal_name;issue;volume;publication_date;page_number;page_index;page_width;page_height;language;img_address;author;publisher;contributor
 def insert_page_row(row: dict[str, str], page_num_of_repro: str, page_id: str):
     """Parses page row from csv file and inserts page into the database if page is not there"""
 
-    print(magazine.magazine_qid, volume.volume_qid, issue.issue_qid)
+    #print(magazine.magazine_qid, volume.volume_qid, issue.issue_qid)
 
     # preparation steps
     iss_vol_numeric_id = issue.issue_in_db()
@@ -155,8 +158,9 @@ def insert_page_row(row: dict[str, str], page_num_of_repro: str, page_id: str):
 
         page.page_insert_new(page_data, row["language"])
         page.page_in_db()
-    else:
-        print("page already in db")
+        print("page " + page.page_title + " was inserted.")
+    # else:
+    #     print("page already in db")
 
     #del page_num_of_repro[row[page_id]]
 
@@ -184,10 +188,18 @@ def parse_reproductions(row: dict[str, str]):
                      "x2" : row["x2"], "y2": row["y2"], "width" : width, "height" : height, "img_address": row["img_address"]}
         repro.repro_insert_new(repro_data, row["language"])
         repro.repro_in_db()
-    else: print("repro already in DB")
+        print("repro " + repro.repro_title + " was inserted.")
+    # else: print("repro already in DB")
 
+def clean_caption(text: str) -> str:
+    result = ""
+    for c in text:
+        if c.isalpha() or c in ['-', '.', '!', '?', ' ']:
+            result += c
+            #print(ord(c), c)
+    return result
 
-def parse_captions(row: dict[str, str]):
+def parse_captions(row: dict[str, str], log_file):
     """ Parse reproduction row and if there the caption is not empty insert the new caption into the db (if not already in db). """
     # caption insert #data = { caption_title, text, on_page, repro}
     if row["caption"] != "":
@@ -207,9 +219,25 @@ def parse_captions(row: dict[str, str]):
 
         caption.caption_title = repro.repro_title + ", caption"
         if caption.caption_in_db() == -1:
-            caption_data = {"caption_title" : caption.caption_title, "text" : row["caption"], "on_page" : int(page.page_qid[1:]), "repro" : int(repro_qid[1:])}
-            caption.caption_insert_new(caption_data, row["language"])
-        else: print("caption already in DB")
+            text_max_400_chars = row["caption"]
+            # if len(text_max_400_chars) >= 400:
+            #     text_max_400_chars = text_max_400_chars[:390]
+
+            # text_max_400_chars = clean_caption(text_max_400_chars)
+            if len(text_max_400_chars) > 0 and any(c.isalpha() for c in text_max_400_chars):
+                caption_data = {"caption_title" : caption.caption_title, "text" : text_max_400_chars, "on_page" : int(page.page_qid[1:]), "repro" : int(repro_qid[1:])}
+                try:
+                    caption.caption_insert_new(caption_data, row["language"])
+                    print("caption " + caption.caption_title + " was inserted.")
+                except:
+                    log_file.write("Caption:\n")
+                    log_file.write(text_max_400_chars+'\n')
+                    log_file.write("On page:\n")
+                    log_file.write(page.page_title+'\n')
+                    log_file.write("Reproduction:\n")
+                    log_file.write(repro.repro_title+'\n')
+                    log_file.write("\n\n")
+                    #print("Caption " + text_max_400_chars + " was not inserted. INSERT MANUALLY.")
 
 
 

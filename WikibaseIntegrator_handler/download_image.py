@@ -6,7 +6,8 @@ def download_img(img_url: str, directory_path: str, img_local_name: str):
     """ Based on img_url download file into directory_path and to file with name img_local_name """
     os.makedirs(directory_path, exist_ok=True)
     img_data = requests.get(img_url).content
-
+    if (not directory_path.endswith("\\") or not directory_path.endswith("/")):
+        directory_path = directory_path + "\\"
     # Extract file format from image url
     img_format = img_url.split('.')[-1]
     with open(directory_path + img_local_name + '.' + img_format, 'wb') as handler:

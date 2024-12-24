@@ -85,3 +85,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#pyinstaller.exe --name WBIntegrator --onefile .\WikibaseIntegrator_handler\ui.py

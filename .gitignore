@@ -5,7 +5,6 @@ apicache-py3
 *.pyc
 *.csv
 *.json
-*.txt
 dist/
 build/
 *.spec

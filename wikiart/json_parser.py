@@ -2,6 +2,10 @@ import requests
 import time
 from human_handler import Human
 from artwork_handler import ArtWork
+# umelci do narození:é před rokem 1935
+#  díla vytvořená před rokem 1950
+
+
 
 month_mapping = {
     'January': '01',
@@ -19,23 +23,43 @@ month_mapping = {
 }
 
 
-def parse_date(data: dict[str, str], date: str, name: str):
+def parse_date(data: dict[str, str], date: str, name: str, threshold_year) -> bool:
+    if date == "None" or date == "0":
+        return True
+
     date = date.replace(',', '').replace('c.', '').split(" ")
+    index = 0
+    if date[index] == '':
+        return True
+
     if len(date) == 1:
         data[name] = f"+{date[0]}-00-00T00:00:00Z"
         data[name+'_precision'] = 9
+    elif len(date) == 2:
+        index = 1
+        data[name] = f"+{date[1]}-{month_mapping[date[0]]}-00T00:00:00Z"
+        data[name+'_precision'] = 10
     elif len(date) == 3:
-        data[name] = f"+{date[2]}-{month_mapping[date[0]]}-{date[0]}T00:00:00Z"
+        index = 2
+        day = "{:02d}".format(int(date[1]))
+        data[name] = f"+{date[2]}-{month_mapping[date[0]]}-{day}T00:00:00Z"
         data[name+'_precision'] = 11
 
+    if len(date) > 0 and int(date[index]) > threshold_year:
+        return False
+    return True
 
 def set_up_dict_for_artist(artist) -> dict[str, str]:
     artist_data = {}
-    artist_data["artistName"] = artist.get('artistName', 'Unknown Name')
-    parse_date(artist_data,  artist.get('birthDayAsString', '0'), "birthDayAsString")
-    parse_date(artist_data, artist.get('deathDayAsString', '0'), "deathDayAsString")
-    parse_date(artist_data, str(artist.get('activeYearsStart', '0')), "activeYearsStart")
-    parse_date(artist_data, str(artist.get('activeYearsCompletion', '0')), "activeYearsCompletion")
+    artist_data["artistName"] = artist.get('artistName', 'Unknown Name').rstrip()
+    retval = parse_date(artist_data,  artist.get('birthDayAsString', '0'), "birthDayAsString", 1934)
+    if retval == False:
+        return {}
+    parse_date(artist_data, artist.get('deathDayAsString', '0'), "deathDayAsString", 9999)
+    retval = parse_date(artist_data, str(artist.get('activeYearsStart', '0')), "activeYearsStart", 1950)
+    if retval == False:
+        return {}
+    parse_date(artist_data, str(artist.get('activeYearsCompletion', '0')), "activeYearsCompletion", 9999)
     artist_data["image"] = artist.get('image', 'None')
     artist_data["gender"] = artist.get('sex', '')
     artist_data["id"] = artist.get('id', '')
@@ -68,26 +92,31 @@ def parse_updated_artists(url: str, log_file):
         pagination_token = data.get("paginationToken")
         if pagination_token:
             log_file.write("paginationToken: " + pagination_token + "\n")
+            print("paginationToken: " + pagination_token + "\n")
             next_url = f"https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken={pagination_token}"
             parse_updated_artists(next_url, log_file)  # Recursive call to handle the next page
 
     except requests.RequestException as e:
         print(f"Error fetching data: {e}")
-    except ValueError as e:
-        print(f"Error parsing JSON: {e}")
+    # except ValueError as e:
+    #     print(f"Error parsing JSON: {e}")
 
 
 def set_up_dict_for_artwork(artwork, artist_qid: str) -> dict[str, str]:
     artwork_dict = {"artist_qid": artist_qid}
     artwork_dict["contentId"] = str(artwork.get("contentId"))
-    title = artwork.get("title")
+    title = artwork.get("title").replace("\"", "\'")
+    if len(title) > 250:
+        title = title[:250]
     if title == "" or title == "Untıtled" or title == "Untitled":
         artwork_dict["title"] = "Untitled " + artwork_dict["contentId"]
     else:
         artwork_dict["title"] = title
     completion_date = artwork.get("completitionYear", "None")
     if completion_date != "None":
-        parse_date(artwork_dict, str(completion_date), "completitionYear")
+        retval = parse_date(artwork_dict, str(completion_date), "completitionYear", 1949)
+        if retval == False:
+            return {}
     artwork_dict["width"] = str(artwork.get("width"))
     artwork_dict["height"] = str(artwork.get("height"))
     artwork_dict["image"] = str(artwork.get("image"))
@@ -97,12 +126,14 @@ def set_up_dict_for_artwork(artwork, artist_qid: str) -> dict[str, str]:
 
 def process_artwork(artwork_json, qid: str, log_f):
     artwork_data = set_up_dict_for_artwork(artwork_json, qid)
+    if len(artwork_data) == 0:
+        return
     artwork = ArtWork()
 
     if artwork.Exists(artwork_data["title"]):
         return
-    log_f.write("\t"+ artwork_data["title"]+"\n")
-
+    log_f.write("\t"+ artwork_data["title"] +"\n")
+    print("\t"+ artwork_data["title"]+"\n")
     artwork.InsertNew(artwork_data)
 
 
@@ -119,8 +150,8 @@ def process_artworks(artworks_url: str, qid: str, log_f):
 
     except requests.RequestException as e:
         print(f"Error fetching data: {e}")
-    except ValueError as e:
-        print(f"Error parsing JSON: {e}")
+    # except ValueError as e:
+    #     print(f"Error parsing JSON: {e}")
 
 
 
@@ -130,9 +161,14 @@ def process_artist(artist, log_file):
 
     :param artist: A dictionary representing the artist's data.
     """
-    name = artist.get('artistName', 'Unknown Name')
-    log_file.write(name + "\n")
+    name = artist.get('artistName', 'Unknown Name').rstrip()
+    birthdate = artist.get('birthDayAsString', '0')
+    log_file.write(name + " " + birthdate + "\n")
+    print(name + " " + birthdate + "\n")
     artist_dict = set_up_dict_for_artist(artist)
+    if len(artist_dict) == 0:
+        return
+
     human = Human()
     qid = human.Exists(name)
     if qid == 'None':
@@ -140,7 +176,7 @@ def process_artist(artist, log_file):
     else:
         human.AddToExisting(artist_dict, qid)
 
-    while qid == -1:
+    while qid == -1 or qid == "None":
         time.sleep(2.5)
         qid = human.Exists(name)
 
@@ -152,7 +188,7 @@ def process_artist(artist, log_file):
 
 def main():
     with open("wikiart_log.txt", "a", encoding='utf-8') as f:
-        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists"
+        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=aDEXfX81a36rr2GEZYBZx0Q9O7aEdFHdBYo%2f3woz8qA%3d" #Kc1p%2b6%2biOcb0%2f9%2fFUhcK3RzHCLjKbD32zrFWlW0dv5A%3d
         parse_updated_artists(initial_url, f)
 
 main()

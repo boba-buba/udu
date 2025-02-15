@@ -67,24 +67,25 @@ class Human:
         item.claims.add(surname_claim)
 
         #birth
-        birth_date_snak = handler.Snak(
-            property_number=necessary_properties["birth_date"],
-            datatype="time",
-            datavalue={
-                "value": {
-                    "time": data["birthDayAsString"],
-                    "timezone": 0,
-                    "before": 0,
-                    "after": 0,
-                    "precision": data["birthDayAsString_precision"],
-                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
-                },
-                "type": "time"
-            }
-        )
-        birth_date_claim = handler.Claim()
-        birth_date_claim.mainsnak = birth_date_snak
-        item.claims.add(birth_date_claim)
+        if "birthDayAsString" in data and data['birthDayAsString'] != '':
+            birth_date_snak = handler.Snak(
+                property_number=necessary_properties["birth_date"],
+                datatype="time",
+                datavalue={
+                    "value": {
+                        "time": data["birthDayAsString"],
+                        "timezone": 0,
+                        "before": 0,
+                        "after": 0,
+                        "precision": data["birthDayAsString_precision"],
+                        "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                    },
+                    "type": "time"
+                }
+            )
+            birth_date_claim = handler.Claim()
+            birth_date_claim.mainsnak = birth_date_snak
+            item.claims.add(birth_date_claim)
 
         #death
         if "deathDayAsString" in data and data['deathDayAsString'] != '':
@@ -224,8 +225,10 @@ class Human:
     def AddToExisting(self, data: dict[str, str], qid: str):
         item = wbi.item.get(entity_id=qid)
 
-        wikiart_url = item.claims.get('P73')[0].mainsnak.datavalue['value']
-        if wikiart_url != '':
+        # wikiart_url = item.claims.get('P73')[0].mainsnak.datavalue['value']
+        # if wikiart_url != '':
+        #     return
+        if 'P73' in item.claims:
             return
 
         #active years start
@@ -239,7 +242,7 @@ class Human:
                     "timezone": 0,
                     "before": 0,
                     "after": 0,
-                    "precision": data["precision_active_start"],
+                    "precision": data["activeYearsStart_precision"],
                     "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
                 },
                 "type": "time"
@@ -260,7 +263,7 @@ class Human:
                     "timezone": 0,
                     "before": 0,
                     "after": 0,
-                    "precision": data["precision_active_end"],
+                    "precision": data["activeYearsCompletion_precision"],
                     "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
                 },
                 "type": "time"
@@ -276,7 +279,7 @@ class Human:
             datatype="monolingualtext",
             datavalue={
                 "value": {
-                    "text" : data["img_address"],
+                    "text" : data["image"],
                     "language" : "en"
                 },
                 "type" : "monolingualtext"

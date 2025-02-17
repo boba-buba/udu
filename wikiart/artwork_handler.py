@@ -155,10 +155,15 @@ class ArtWork:
 
         itemEnt = item.write(login=login_instance)
 
-    def Exists(self, name: str) -> bool:
+    def Exists(self, name: str, wikiart_id: str) -> bool:
         query = 'SELECT ?item WHERE { ?item ?label "' + name +'"@en .}'
         retval = execute_query(query)
         if retval == -1:
             return False
         else:
-            return True
+            item = wbi.item.get(entity_id=retval)
+
+            if 'P74' in item.claims and item.claims.get('P74')[0].mainsnak.datavalue['value'] == wikiart_id:
+                return True
+            else:
+                return False

@@ -130,7 +130,7 @@ def process_artwork(artwork_json, qid: str, log_f):
         return
     artwork = ArtWork()
 
-    if artwork.Exists(artwork_data["title"]):
+    if artwork.Exists(artwork_data["title"], artwork_data["contentId"]):
         return
     log_f.write("\t"+ artwork_data["title"] +"\n")
     print("\t"+ artwork_data["title"]+"\n")
@@ -188,7 +188,7 @@ def process_artist(artist, log_file):
 
 def main():
     with open("wikiart_log.txt", "a", encoding='utf-8') as f:
-        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=aDEXfX81a36rr2GEZYBZx0Q9O7aEdFHdBYo%2f3woz8qA%3d" #Kc1p%2b6%2biOcb0%2f9%2fFUhcK3RzHCLjKbD32zrFWlW0dv5A%3d
+        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=P73zhrscOGQNnl9GQaRAC2SMbhMiogmtS8r7viKezrg%3d"
         parse_updated_artists(initial_url, f)
 
 main()
@@ -198,3 +198,5 @@ main()
 #     parse_updated_artists(initial_url)
 
 
+### TODO: podivat se jak presne kontrolovat, ze artwork je v db already, check all results, that will be returned by execute query.
+### + jeste zkusit v query servic check for duplicities treba na examplu  Ebru (attributed)

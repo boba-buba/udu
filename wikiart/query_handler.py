@@ -11,7 +11,7 @@ def execute_query(query_to_exec: str) -> str :
 
     if len(bindings) > 0:
         wb_url = bindings[0]['item']['value']
-        entity_id = split_string(wb_url)
+        entity_id = split_string(wb_url).split('-')[0]
         return entity_id
     else:
         return -1

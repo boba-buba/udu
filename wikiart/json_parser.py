@@ -51,7 +51,7 @@ def parse_date(data: dict[str, str], date: str, name: str, threshold_year) -> bo
 
 def set_up_dict_for_artist(artist) -> dict[str, str]:
     artist_data = {}
-    artist_data["artistName"] = artist.get('artistName', 'Unknown Name').rstrip()
+    artist_data["artistName"] = artist.get('artistName', 'Unknown Name').rstrip().replace('\"', '')
     retval = parse_date(artist_data,  artist.get('birthDayAsString', '0'), "birthDayAsString", 1934)
     if retval == False:
         return {}
@@ -161,7 +161,7 @@ def process_artist(artist, log_file):
 
     :param artist: A dictionary representing the artist's data.
     """
-    name = artist.get('artistName', 'Unknown Name').rstrip()
+    name = artist.get('artistName', 'Unknown Name').rstrip().replace('\"', '')
     birthdate = artist.get('birthDayAsString', '0')
     log_file.write(name + " " + birthdate + "\n")
     print(name + " " + birthdate + "\n")
@@ -188,7 +188,7 @@ def process_artist(artist, log_file):
 
 def main():
     with open("wikiart_log.txt", "a", encoding='utf-8') as f:
-        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=P73zhrscOGQNnl9GQaRAC2SMbhMiogmtS8r7viKezrg%3d"
+        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=akz%2foNabT8XXQupTcq3NKzT8S%2b2Zbwa1h47ROigivlM%3d"
         parse_updated_artists(initial_url, f)
 
 main()
@@ -198,5 +198,5 @@ main()
 #     parse_updated_artists(initial_url)
 
 
-### TODO: podivat se jak presne kontrolovat, ze artwork je v db already, check all results, that will be returned by execute query.
+### TODO: zkusit Nuno Gonçalves proc dvakrat? Ruzne delky, nejake bile znaky, kvuli tomu dvakrat. Jak to vyresit ve vice pripadech?
 ### + jeste zkusit v query servic check for duplicities treba na examplu  Ebru (attributed)

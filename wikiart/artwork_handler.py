@@ -1,7 +1,7 @@
 from handler import login_instance
 from handler import wbi
 from handler import general_properties
-from query_handler import execute_query
+from query_handler import execute_query, execute_query_get_multiple_results
 
 import handler
 import query_handler
@@ -157,13 +157,13 @@ class ArtWork:
 
     def Exists(self, name: str, wikiart_id: str) -> bool:
         query = 'SELECT ?item WHERE { ?item ?label "' + name +'"@en .}'
-        retval = execute_query(query)
-        if retval == -1:
+        retval = execute_query_get_multiple_results(query)
+        if retval == []:
             return False
         else:
-            item = wbi.item.get(entity_id=retval)
+            for i in range(len(retval)):
+                item = wbi.item.get(entity_id=retval[i])
+                if 'P74' in item.claims and item.claims.get('P74')[0].mainsnak.datavalue['value'] == wikiart_id:
+                    return True
 
-            if 'P74' in item.claims and item.claims.get('P74')[0].mainsnak.datavalue['value'] == wikiart_id:
-                return True
-            else:
-                return False
+        return False

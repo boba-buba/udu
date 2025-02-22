@@ -322,12 +322,5 @@ class Human:
 
 # print(h.Exists("Nuno Gonçalves"))
 # print(h.Exists("Nuno Gonçalves"))
-wikiart = "Nuno Gonçalves"
-abart = "Nuno Gonçalves"
-print(len(wikiart), len(abart))
 
-for i in range(len(abart)):
-    print(ord(wikiart[i]) == ord(abart[i]))
-    print(ord(wikiart[i]), ord(abart[i]))
-
-#h.AddToExisting({}, h.Exists("Pablo Picasso"))
+# h.AddToExisting({}, h.Exists("Pablo Picasso"))

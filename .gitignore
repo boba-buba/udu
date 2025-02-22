@@ -13,3 +13,4 @@ wikibase_try.py
 WikibaseIntegrator_handler/query_handler.py
 WikibaseIntegrator_handler/handler.py
 WikibaseIntegrator_handler/__pycache__/handler.cpython-311.pyc
+wikiart/experiment.py

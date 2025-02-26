@@ -190,7 +190,7 @@ def process_artist(artist, log_file):
 
 def main():
     with open("wikiart_log.txt", "a", encoding='utf-8') as f:
-        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=twq%2fV1Kp7%2bFAFqa1un7s3bRGlppvaRVl%2fp%2fS9ptbJEA%3d"
+        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=eHD8xvjo%2fx0SU9TfXJpRXfVxqvf%2bVQiCdWYK81Dqt4E%3d"
         parse_updated_artists(initial_url, f)
 
 main()
@@ -200,5 +200,5 @@ main()
 #     parse_updated_artists(initial_url)
 
 
-### TODO: zkusit Nuno Gonçalves proc dvakrat? Ruzne delky, nejake bile znaky, kvuli tomu dvakrat. Jak to vyresit ve vice pripadech?
+### TODO: Berthold  Woltze malformed text, do wikibase
 ### + jeste zkusit v query servic check for duplicities treba na examplu  Ebru (attributed)

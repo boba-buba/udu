@@ -53,7 +53,7 @@ def parse_date(data: dict[str, str], date: str, name: str, threshold_year) -> bo
 
 def set_up_dict_for_artist(artist) -> dict[str, str]:
     artist_data = {}
-    artist_data["artistName"] = unicodedata.normalize("NFC", artist.get('artistName', 'Unknown Name').rstrip().replace('\"', ''))
+    artist_data["artistName"] = ' '.join(unicodedata.normalize("NFC", artist.get('artistName', 'Unknown Name').rstrip().replace('\"', '')).split())
     retval = parse_date(artist_data,  artist.get('birthDayAsString', '0'), "birthDayAsString", 1934)
     if retval == False:
         return {}
@@ -163,7 +163,7 @@ def process_artist(artist, log_file):
 
     :param artist: A dictionary representing the artist's data.
     """
-    name = unicodedata.normalize("NFC", artist.get('artistName', 'Unknown Name').rstrip().replace('\"', ''))
+    name = ' '.join(unicodedata.normalize("NFC", artist.get('artistName', 'Unknown Name').rstrip().replace('\"', '')).split())
     birthdate = artist.get('birthDayAsString', '0')
     log_file.write(name + " " + birthdate + "\n")
     print(name + " " + birthdate + "\n")
@@ -190,7 +190,7 @@ def process_artist(artist, log_file):
 
 def main():
     with open("wikiart_log.txt", "a", encoding='utf-8') as f:
-        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=eHD8xvjo%2fx0SU9TfXJpRXfVxqvf%2bVQiCdWYK81Dqt4E%3d"
+        initial_url = "https://www.wikiart.org/en/api/2/UpdatedArtists?paginationToken=kt5JZBoacROKLBaAQVjQE7X3aQJSAPKTK3EMxR8xKEc%3d"
         parse_updated_artists(initial_url, f)
 
 main()
